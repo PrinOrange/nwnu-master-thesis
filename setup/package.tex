@@ -8,9 +8,7 @@
 \usepackage{graphicx}                       % xelatex 下自动使用 xetex
 % 驱动，直接支持 PDF/PNG/JPG
 \usepackage{geometry}
-%\usepackage{geometry}
 \geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=3.0cm}%%%%%%%页面边距的设置
-%\geometry{left=2.5cm,right=2.5cm,top=2cm,bottom=2.5cm,footskip=1.1cm,headsep=0.7cm,head=0.4cm}
 % 支持版面尺寸设置
 \usepackage{titlesec}                       % 控制标题的宏包
 \usepackage{titletoc}                       % 控制目录的宏包
@@ -62,15 +60,11 @@
 \usepackage{caption}
 
 \usepackage{ragged2e}
-% \usepackage{expl3}
-
-%\usepackage{hypbmsec}                      % 用来控制书签中标题显示内容
 
 %如果您的 pdf 制作中文书签有乱码使用如下命令，就可以解决了
 % xelatex 下 hyperref 自动检测 xetex 驱动，无需显式指定
 \usepackage[unicode,
   pdfstartview=FitH,
-  %CJKbookmarks=true,
   bookmarksnumbered=true,
   bookmarksopen=true,
   colorlinks=true,
@@ -82,7 +76,6 @@
   breaklinks=true
 ]{hyperref}
 
-% \usepackage{setup/bibspacing}
 \renewcommand{\theequation}{\arabic{chapter}-\arabic{equation}}
 \makeatletter
 \def\tagform@#1{\maketag@@@{（\ignorespaces#1\unskip）}}
