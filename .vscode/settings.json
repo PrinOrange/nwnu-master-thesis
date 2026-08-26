@@ -51,6 +51,7 @@
     "xeCJK",
     "Xiangdong"
   ],
+  "latex-workshop.latex.autoBuild.run": "never",
   "latex-workshop.latex.tools": [
     {
       "name": "xelatex",

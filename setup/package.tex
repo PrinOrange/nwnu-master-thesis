@@ -24,7 +24,10 @@
 \setCJKfamilyfont{li}{LiSu}
 \setCJKfamilyfont{FSGB}{FangSong}
 % 拉丁正文用 Times New Roman（fontspec）；数学用 newtxmath（Times 风格）。
+% 必须显式先加载 fontspec，再 \setmainfont —— 否则 newtxmath 解析 Times 粗体(OT1/b/n)时
+% 会在日志报 "Font shape OT1/TimesNewRoman(0)/b/n undefined"（虽不影响粗体渲染，但不干净）。
 % 注意：不要在这里加载 newtxtext —— 它与 fontspec 冲突，会导致 SimSun 等中文字体解析失败。
+\usepackage{fontspec}
 \setmainfont{Times New Roman}
 \usepackage{cite}
 \usepackage{color}                          % 支持彩色
