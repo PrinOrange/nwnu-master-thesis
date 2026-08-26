@@ -1,29 +1,23 @@
 # ============================================================
 # Makefile for the NWNU graduate thesis template
-# Builds M.Eng.Main.tex into M.Eng.Main.pdf.
+# Builds main.tex into main.pdf with XeLaTeX:
+#     xelatex -> bibtex -> xelatex -> xelatex
+# (The project was migrated to XeLaTeX; Chinese is handled by
+#  ctex + xeCJK, so the old latex+dvipdfmx / pdflatex routes
+#  are no longer needed.)
 #
-# Default engine is the dvipdfmx route (same as pdfmake.bat):
-#     latex -> bibtex -> latex -> latex -> dvipdfmx
-# Use `make pdflatex` to build with pdflatex instead.
-# (Note: the header of M.Eng.Main.tex, \def\usewhat{...},
-#  should match the engine you pick.)
-#
-# Requires: GNU make + a TeX distribution with latex/bibtex/
-# dvipdfmx (and optionally pdflatex) on PATH. Under Git Bash,
-# `make clean` uses find -delete.
+# Requires: GNU make + a TeX distribution with xelatex/bibtex on PATH.
+# Under Git Bash, `make clean` uses find -delete.
 #
 # Targets:
-#   make / make latex   build with the latex+dvipdfmx chain
-#   make pdflatex       build with pdflatex
-#   make clean          remove intermediate files (keeps PDF)
-#   make cleanall       remove intermediates and the built PDF
+#   make           build with xelatex
+#   make clean     remove intermediate files (keeps PDF)
+#   make cleanall  remove intermediates and the built PDF
 # ============================================================
 
-MAIN     := main
-BIB      := bibtex
-LATEX    := latex
-PDFLATEX := pdflatex
-DVIPDFMX := dvipdfmx
+MAIN    := main
+BIB     := bibtex
+XELATEX := xelatex
 
 # Files that should trigger a rebuild when changed
 SOURCES := $(MAIN).tex \
@@ -37,30 +31,18 @@ SOURCES := $(MAIN).tex \
            $(wildcard appendix/*.tex) \
            $(wildcard preface/*.tex)
 
-.PHONY: all latex pdflatex clean cleanall
+.PHONY: all clean cleanall
 
-all: latex
-
-# --- dvipdfmx route (default, matches pdfmake.bat) ---
-latex: $(MAIN).pdf
+all: $(MAIN).pdf
 
 $(MAIN).pdf: $(SOURCES)
-	$(LATEX)   -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
+	$(XELATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
 	$(BIB)     $(MAIN)
-	$(LATEX)   -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
-	$(LATEX)   -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
-	$(DVIPDFMX) $(MAIN).dvi
+	$(XELATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
+	$(XELATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
 	@echo "Built: $(MAIN).pdf"
 
-# --- pdflatex route ---
-pdflatex:
-	$(PDFLATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
-	$(BIB)      $(MAIN)
-	$(PDFLATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
-	$(PDFLATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
-	@echo "Built: $(MAIN).pdf"
-
-# --- cleanup (same list as clean.sh) ---
+# --- cleanup (same list as clean.bat) ---
 clean:
 	@find . -type f \( \
 	    -name '*.aux' -o -name '*.bbl' -o -name '*.blg' -o -name '*.bcf' -o \
@@ -78,5 +60,5 @@ clean:
 	@echo "Cleaned intermediate files."
 
 cleanall: clean
-	rm -f $(MAIN).pdf $(MAIN).dvi
+	rm -f $(MAIN).pdf
 	@echo "Also removed the built PDF."

@@ -1,26 +1,12 @@
 % !Mode:: "TeX:UTF-8"
 
 %%%%%%%%%% Package %%%%%%%%%%%%
-%\usepackage{fontspec}
-%\usepackage{xunicode}
-%\usepackage{xltxtra}
-\makeatletter
-\@ifundefined{usewhat}{\def\usewhat{dvipdfmx}}{}   % 未定义时默认 dvipdfmx
-\def\NWNU@pdflatex{pdflatex}
-\makeatother
-\usepackage{times}
+% 项目已整体迁移到 XeLaTeX，中文由 ctex + xeCJK 处理
 \usepackage{enumerate}
 \usepackage[chapter]{algorithm}
 \usepackage{algorithmic}
-\makeatletter
-\ifx\usewhat\NWNU@pdflatex
-\usepackage{graphicx}
-\else
-\usepackage[dvipdfmx]{graphicx}           % latex+dvipdfmx 链：支持直接引用
-% PDF/PNG/JPG 图片
-\DeclareGraphicsExtensions{.eps,.ps,.pdf,.png,.jpg,.jpeg}
-\fi
-\makeatother
+\usepackage{graphicx}                       % xelatex 下自动使用 xetex
+% 驱动，直接支持 PDF/PNG/JPG
 \usepackage{geometry}
 %\usepackage{geometry}
 \geometry{left=3.0cm,right=3.0cm,top=3.0cm,bottom=3.0cm}%%%%%%%页面边距的设置
@@ -29,17 +15,19 @@
 \usepackage{titlesec}                       % 控制标题的宏包
 \usepackage{titletoc}                       % 控制目录的宏包
 \usepackage{fancyhdr}                       % fancyhdr 宏包 支持页眉和页脚的相关定义
-\usepackage[UTF8]{ctex}                     % 支持中文显示
+\usepackage{ctex}                          % xelatex 下自动加载 xeCJK，支持中文
+% 将模板自定义的 \song/\hei/\kai/\fs/\li/\FSGB（\CJKfamily{...}）映射到 Windows 系统字体
+\setCJKfamilyfont{song}{SimSun}
+\setCJKfamilyfont{hei}{SimHei}
+\setCJKfamilyfont{kai}{KaiTi}
+\setCJKfamilyfont{fs}{FangSong}
+\setCJKfamilyfont{li}{LiSu}
+\setCJKfamilyfont{FSGB}{FangSong}
+% 拉丁正文用 Times New Roman（fontspec）；数学用 newtxmath（Times 风格）。
+% 注意：不要在这里加载 newtxtext —— 它与 fontspec 冲突，会导致 SimSun 等中文字体解析失败。
+\setmainfont{Times New Roman}
 \usepackage{cite}
-\makeatletter
-\ifx\usewhat\NWNU@pdflatex
-\usepackage{color}                        % 支持彩色
-\else
-% 与 graphicx 一样用 dvipdfmx 驱动；否则 color 默认加载 dvips.def，
-% 会把 \Gin@extensions 重置为不含 .pdf 的列表，导致 PDF 图片找不到。
-\usepackage[dvipdfmx]{color}
-\fi
-\makeatother
+\usepackage{color}                          % 支持彩色
 \usepackage{amsmath}                        % AMSLaTeX 宏包 用来排出更加漂亮的公式
 \usepackage{amssymb}                        % 数学符号生成命令
 \usepackage[below]{placeins}                %允许上一个 section
@@ -58,15 +46,11 @@
 \usepackage{enumitem}                       % 使用 enumitem 宏包，改变列表项的格式
 \usepackage{enumerate}
 \usepackage{calc}                           % 长度可以用 + - * / 进行计算
-\usepackage{txfonts}                        % 字体宏包
+\usepackage{newtxmath}                       % Times 风格数学字体（xelatex 兼容）
 \usepackage{bm}                             % 处理数学公式中的黑斜体的宏包
 \usepackage[amsmath,thmmarks,hyperref]{ntheorem}  % 定理类环境宏包，其中
 % amsmath 选项用来兼容 AMS LaTeX 的宏包
-\usepackage{CJKnumb}                        % 提供将阿拉伯数字转换成中文数字的命令
 \usepackage{indentfirst}                    % 首行缩进宏包
-\usepackage{CJKutf8}                        % 用在 UTF8 编码环境下，它可以自动调用
-% CJK，同时针对 UTF8 编码作了设置。
-\usepackage{CJK}
 \usepackage{fancyhdr}
 \usepackage{lastpage}
 \usepackage{layout}
@@ -80,10 +64,8 @@
 %\usepackage{hypbmsec}                      % 用来控制书签中标题显示内容
 
 %如果您的 pdf 制作中文书签有乱码使用如下命令，就可以解决了
-% hyperref 的驱动跟随 main.tex 中的 \usewhat 自动选择：
-%   \def\usewhat{dvipdfmx}  →  latex + dvipdfmx 编译链（pdfmake.bat / make 默认）
-%   \def\usewhat{pdflatex}  →  pdflatex 编译链（make pdflatex）
-\usepackage[\usewhat, unicode,
+% xelatex 下 hyperref 自动检测 xetex 驱动，无需显式指定
+\usepackage[unicode,
   pdfstartview=FitH,
   %CJKbookmarks=true,
   bookmarksnumbered=true,

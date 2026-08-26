@@ -1,13 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Run mode: pdfLaTeX
+%  Run mode: XeLaTeX
+% !TeX program = xelatex
 %  !Mode: "Tex:Utf-8"
 %  Authors: Xiangdong Jia
-%  Date: Last Updated May-30-2023
+%  Date: Last Updated May-30-2023 (migrated to XeLaTeX)
 %  Copyright UWC&IoT@NWNU
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\def\usewhat{dvipdfmx}                              % 定义编译方式 dvipdfmx
-% 或者 pdflatex，默认为 dvipdfmx
-% 方式编译，如果需要修改，只需改变花括号中的内容即可。
+\def\usewhat{xelatex}                               % 编译方式 xelatex
+% 项目已整体迁移到 XeLaTeX，编译链：xelatex → bibtex → xelatex → xelatex
 %\setlength{\baselineskip}{20pt}
 %\setlength{\headheight}{25pt}
 
@@ -16,9 +16,8 @@
 % 如果论文超过 60 页 可以使用 twoside 双面打印
 \input{setup/package}                      % 定义本文所使用宏包
 \graphicspath{{figures/}}
-\usepackage{amsmath}                       % 开始中文字体使用
+\usepackage{amsmath}                       % 数学公式支持
 \usepackage{url}
-\usepackage{CJK}
 %\usepackage{tabu}
 \usepackage{enumerate}
 \DeclareCaptionFont{myfont}{\fontsize{10.5pt}{10.5pt}\selectfont}
@@ -27,245 +26,242 @@
 % 定义所有的.eps 文件在 figures 子目录下
 \begin{document}
 \begin{sloppypar}                          % 开始全文
-  \begin{CJK*}{UTF8}{song}
+  \pagestyle{empty}
+  \input{setup/format}                       % 完成对论文各个部分格式的设置
 
-    \pagestyle{empty}
-    \input{setup/format}                       % 完成对论文各个部分格式的设置
+  %\renewcommand{\CJKglue}{\hskip 2cm}
+  \frontmatter                               % 以下是论文导言部分，包括论文的封面，中英文摘要和中文目录
+  \input{preface/cover}                      % 封面
 
-    %\renewcommand{\CJKglue}{\hskip 2cm}
-    \frontmatter                               % 以下是论文导言部分，包括论文的封面，中英文摘要和中文目录
-    \input{preface/cover}                      % 封面
+  %%%%%%%%%%   目录   %%%%%%%%%%
+  %\clearpage
+  %\pagestyle{empty}
+  %\fancyhf{}
+  %\thispagestyle{empty}
 
-    %%%%%%%%%%   目录   %%%%%%%%%%
-    %\clearpage
-    %\pagestyle{empty}
+  % 中文目录
+  \thispagestyle{empty}
+  %\includepdfset{pagecommand={\thispagestyle{empty}}} % pdfpages 宏包插入文件无页码的解决
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Abstract and Keywords
+  % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %\clearpage
+  %\pagestyle{plain}
+  %  \fancyhf{}
+  %  \setcounter{page}{1}
+
+  %\fancyhead[CO]{\song\xiaowu \@cheading}
+  %\fancyhead[CE]{\song\xiaowu \@ctitle}
+  %\fancyfoot[C]{\song\xiaowu ~\thepage~}
+  %\makeatletter %双线页眉
+  %\def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi%
+  %\hrule\@height 1.0pt \@width\headwidth\vskip1pt %上面线为 1pt 粗
+  %\hrule\@height 0.5pt\@width\headwidth  %下面 0.5pt 粗
+  %\vskip-2\headrulewidth\vskip-1pt}      %两条线的距离 1pt
+  %\vspace{7mm}
+  %}     %双线与下面正文之间的垂直间距
+
+  %\fancypagestyle{plain}{% 设置开章页页眉页脚风格
+  %    \fancyhf{}%
+  %\fancyhead[CO]{\song\xiaowu \@cheading}
+  %\fancyhead[CE]{\song\xiaowu \@ctitle}
+  %\fancyfoot[C]{\song\xiaowu ~\thepage~} %首页页脚格式
+  %}
+
+  \clearpage
+  %
+  %\pagestyle{fancy}
+  %  \fancyhf{}
+  %\fancyhead[CO]{\song\xiaowu \@cheading}
+  %\fancyhead[CE]{\song\xiaowu \@ctitle}
+  %
+  %\fancyfoot[C]{\song\xiaowu ~\thepage~}
+  %\makeatletter %双线页眉
+  %\def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi%
+  %\hrule\@height 1.0pt \@width\headwidth\vskip1pt %上面线为 1pt 粗
+  %\hrule\@height 0.5pt\@width\headwidth  %下面 0.5pt 粗
+  %\vskip-2\headrulewidth\vskip-1pt}      %两条线的距离 1pt
+  %\vspace{7mm}
+  %}     %双线与下面正文之间的垂直间距
+  %
+  %\fancypagestyle{plain}{% 设置开章页页眉页脚风格
+  %    \fancyhf{}%
+  %\fancyhead[CO]{\song\xiaowu \@cheading}
+  %\fancyhead[CE]{\song\xiaowu \@ctitle}
+  %\fancyfoot[C]{\song\xiaowu ~\thepage~} %首页页脚格式
+  %}
+
+  % \fancypagestyle{fancy}{
+  % \fancyhead[OC]{\wuhao\songti\leftmark} %奇数页，章标题
+  % \fancyfoot[C]{\song\xiaowu ~\thepage~}
+  % \fancyhead[EC]{\wuhao\songti\@cheading} %论文题目
+  % \fancyfoot[C]{\song\xiaowu ~\thepage~}
+  % }
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%以下是设置页眉页脚的代码
+  %\setlength{\headheight}{15pt}
+  \fancypagestyle{plain}{%为了章首页
+    \fancyhf{}
+    \fancyhead[C]{\wuhao\songti\leftmark} %奇数页，章标题
+    \fancyfoot[C]{\song\wuhao ~\thepage~}
+    \renewcommand\headrulewidth{0.75pt}%%%%%%%%%%%%%%%%%该数值为页眉线的粗细设置
+  \renewcommand{\footrulewidth}{0pt}}
+
+  \fancypagestyle{cchair}{%为了摘要
+    \fancyhf{}
+    \fancyhead[CO]{\zihao{5}\songti 摘\qquad 要}
+    \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
+    \fancyfoot[C]{\wuhao\thepage}
+    \setcounter{page}{1}%当前页设置成首页
+    \renewcommand{\headrulewidth}{0.75pt}
+  \renewcommand{\footrulewidth}{0pt}}
+  \fancypagestyle{echair}{%为了 abstract
+    \fancyhf{}
+    \fancyhead[CO]{\zihao{5}\songti Abstract}
+    \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
+    \fancyfoot[C]{\wuhao\thepage}
+    \renewcommand{\headrulewidth}{0.75pt}
+  \renewcommand{\footrulewidth}{0pt}}
+
+  \def\@caffil{%
+    \let\@oddhead\@empty%
+    \let\@evenhead\@empty%
+    \let\@oddfoot\@empty%
+  \let\@evenfoot\@empty}
+
+  \fancypagestyle{caffil}{%为了目录
+    \fancyhf{}
+    \fancyhead[CO]{\wuhao\songti\leftmark}
+    \fancyfoot[C]{\wuhao\thepage}
+    \fancyhead[CE]{\wuhao\songti\@cheading}
+    \renewcommand{\headrulewidth}{0.75pt}
+  \renewcommand{\footrulewidth}{0pt}}
+
+  \renewcommand\frontmatter{%
+    \if@openright\cleardoublepage\else\clearpage\fi
+    \@mainmatterfalse
+    \pagenumbering{Roman}
+  \pagestyle{caffil}}
+
+  \def\ps@XDU@main{%
+    \let\@oddhead\@empty%
+    \let\@evenhead\@empty%
+    \let\@oddfoot\@empty%
+  \let\@evenfoot\@empty}
+
+  \fancypagestyle{XDU@main}{%为了主体
     %\fancyhf{}
-    %\thispagestyle{empty}
+    \fancyhead[CO]{\wuhao\songti\leftmark} %奇数页，章标题
+    \fancyfoot[C]{\song\wuhao ~\thepage~}
+    \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
+    \fancyfoot[C]{\song\wuhao ~\thepage~}
+  \renewcommand\headrulewidth{0.75pt}}
 
-    % 中文目录
-    \thispagestyle{empty}
-    %\includepdfset{pagecommand={\thispagestyle{empty}}} % pdfpages 宏包插入文件无页码的解决
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \renewcommand\mainmatter{%
+    \if@openright\cleardoublepage\else\clearpage\fi
+    \@mainmattertrue
+    \pagenumbering{arabic}
+  \pagestyle{XDU@main}}
+  \newcommand\comtinuematter{%
+    \if@openright\cleardoublepage\else\clearpage\fi
+  \@mainmattertrue}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Abstract and Keywords
-    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %\clearpage
-    %\pagestyle{plain}
-    %  \fancyhf{}
-    %  \setcounter{page}{1}
+  %\renewcommand{\CJKglue}{\hskip 0.5pt plus \baselineskip}
 
-    %\fancyhead[CO]{\song\xiaowu \@cheading}
-    %\fancyhead[CE]{\song\xiaowu \@ctitle}
-    %\fancyfoot[C]{\song\xiaowu ~\thepage~}
-    %\makeatletter %双线页眉
-    %\def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi%
-    %\hrule\@height 1.0pt \@width\headwidth\vskip1pt %上面线为 1pt 粗
-    %\hrule\@height 0.5pt\@width\headwidth  %下面 0.5pt 粗
-    %\vskip-2\headrulewidth\vskip-1pt}      %两条线的距离 1pt
-    %\vspace{7mm}
-    %}     %双线与下面正文之间的垂直间距
+  %\addcontentsline{toc}{chapter}{摘\qquad 要}
+  % \chapter*{\centering\hei\xiaoer 摘\qquad 要}
+  %\clearpage
+  \begin{center}%文本居中显示
+    {
+      \vspace*{11pt}
+    \hei\sanhao{摘\quad 要}}
+    \vspace{7pt}
 
-    %\fancypagestyle{plain}{% 设置开章页页眉页脚风格
-    %    \fancyhf{}%
-    %\fancyhead[CO]{\song\xiaowu \@cheading}
-    %\fancyhead[CE]{\song\xiaowu \@ctitle}
-    %\fancyfoot[C]{\song\xiaowu ~\thepage~} %首页页脚格式
-    %}
+  \end{center}
+  \thispagestyle{cchair}
+  \pagestyle{cchair}
 
-    \clearpage
-    %
-    %\pagestyle{fancy}
-    %  \fancyhf{}
-    %\fancyhead[CO]{\song\xiaowu \@cheading}
-    %\fancyhead[CE]{\song\xiaowu \@ctitle}
-    %
-    %\fancyfoot[C]{\song\xiaowu ~\thepage~}
-    %\makeatletter %双线页眉
-    %\def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi%
-    %\hrule\@height 1.0pt \@width\headwidth\vskip1pt %上面线为 1pt 粗
-    %\hrule\@height 0.5pt\@width\headwidth  %下面 0.5pt 粗
-    %\vskip-2\headrulewidth\vskip-1pt}      %两条线的距离 1pt
-    %\vspace{7mm}
-    %}     %双线与下面正文之间的垂直间距
-    %
-    %\fancypagestyle{plain}{% 设置开章页页眉页脚风格
-    %    \fancyhf{}%
-    %\fancyhead[CO]{\song\xiaowu \@cheading}
-    %\fancyhead[CE]{\song\xiaowu \@ctitle}
-    %\fancyfoot[C]{\song\xiaowu ~\thepage~} %首页页脚格式
-    %}
+  \song\xiaosi\setlength{\baselineskip}{20pt}
+  \setlength\parindent{2em}\@cabstract
+  \vspace{\baselineskip}
 
-    % \fancypagestyle{fancy}{
-    % \fancyhead[OC]{\wuhao\songti\leftmark} %奇数页，章标题
-    % \fancyfoot[C]{\song\xiaowu ~\thepage~}
-    % \fancyhead[EC]{\wuhao\songti\@cheading} %论文题目
-    % \fancyfoot[C]{\song\xiaowu ~\thepage~}
-    % }
+  %\hangafter=1\hangindent=52.3pt\noindent   %如果取消该行注释，关键词换行时将会自动缩进
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%以下是设置页眉页脚的代码
-    %\setlength{\headheight}{15pt}
-    \fancypagestyle{plain}{%为了章首页
-      \fancyhf{}
-      \fancyhead[C]{\wuhao\songti\leftmark} %奇数页，章标题
-      \fancyfoot[C]{\song\wuhao ~\thepage~}
-      \renewcommand\headrulewidth{0.75pt}%%%%%%%%%%%%%%%%%该数值为页眉线的粗细设置
-    \renewcommand{\footrulewidth}{0pt}}
+  {{\hei\xiaosi 关键词：} \@ckeywords}
 
-    \fancypagestyle{cchair}{%为了摘要
-      \fancyhf{}
-      \fancyhead[CO]{\zihao{5}\songti 摘\qquad 要}
-      \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
-      \fancyfoot[C]{\wuhao\thepage}
-      \setcounter{page}{1}%当前页设置成首页
-      \renewcommand{\headrulewidth}{0.75pt}
-    \renewcommand{\footrulewidth}{0pt}}
-    \fancypagestyle{echair}{%为了 abstract
-      \fancyhf{}
-      \fancyhead[CO]{\zihao{5}\songti Abstract}
-      \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
-      \fancyfoot[C]{\wuhao\thepage}
-      \renewcommand{\headrulewidth}{0.75pt}
-    \renewcommand{\footrulewidth}{0pt}}
+  %%%%%%%%%%%%%%%%%%% ------ 英文摘要 English Abstract；-----
+  % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \clearpage
+  %\addcontentsline{toc}{chapter}{Abstract}
+  \begin{center}%文本居中显示
+    {
+      \vspace*{-4pt}
+    \sanhao\bf \sf{Abstract}}
+    \vspace*{1.45pt}
 
-    \def\@caffil{%
-      \let\@oddhead\@empty%
-      \let\@evenhead\@empty%
-      \let\@oddfoot\@empty%
-    \let\@evenfoot\@empty}
+  \end{center}
+  % \chapter*{\centering\xiaoer \bf{Abstract}}
+  \thispagestyle{echair}
+  \pagestyle{echair}
+  %\vspace{\baselineskip}
+  \newcommand{\enabstractname}{Abstract}
+  \setlength{\baselineskip}{20pt}\setlength\parindent{1em}\@eabstract
+  \vspace{\baselineskip}
+  %\hangafter=1\hangindent=60pt\noindent  %如果取消该行注释，KEY WORDS 换行时将会自动缩进
+  \noindent
+  {{\xiaosi\textbf{~~~~Key Words:}} \@ekeywords}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    \fancypagestyle{caffil}{%为了目录
-      \fancyhf{}
-      \fancyhead[CO]{\wuhao\songti\leftmark}
-      \fancyfoot[C]{\wuhao\thepage}
-      \fancyhead[CE]{\wuhao\songti\@cheading}
-      \renewcommand{\headrulewidth}{0.75pt}
-    \renewcommand{\footrulewidth}{0pt}}
+  \clearpage
+  \newcommand{\loflabel}{图~}
+  \renewcommand{\numberline}[1]{\song\xiaosi\loflabel~#1\hspace*{\baselineskip}}
+  %\addcontentsline{toc}{chapter}{图片索引}
+  %\listoffigures
 
-    \renewcommand\frontmatter{%
-      \if@openright\cleardoublepage\else\clearpage\fi
-      \@mainmatterfalse
-      \pagenumbering{Roman}
-    \pagestyle{caffil}}
+  \clearpage
+  \newcommand{\lotlabel}{表~}
+  \renewcommand{\numberline}[1]{\song\xiaosi\lotlabel~#1\hspace*{\baselineskip}}
+  %\addcontentsline{toc}{chapter}{表格索引}
+  %\listoftables
+  %\clearpage{\pagestyle{empty}\cleardoublepage}
+  %\clearpage{\pagestyle{empty}\cleardoublepage}
 
-    \def\ps@XDU@main{%
-      \let\@oddhead\@empty%
-      \let\@evenhead\@empty%
-      \let\@oddfoot\@empty%
-    \let\@evenfoot\@empty}
+  %%%%%%%%%%%%%%%%%%%%%%%%%%-------------目录部分------------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % \pagestyle{caffil}
+  %\defaultfont\tableofcontents   %目录方法就放哪
+  %\defaultfont
+  \defaultfont\tableofcontents   %目录方法就放哪
+  \thispagestyle{caffil}
 
-    \fancypagestyle{XDU@main}{%为了主体
-      %\fancyhf{}
-      \fancyhead[CO]{\wuhao\songti\leftmark} %奇数页，章标题
-      \fancyfoot[C]{\song\wuhao ~\thepage~}
-      \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
-      \fancyfoot[C]{\song\wuhao ~\thepage~}
-    \renewcommand\headrulewidth{0.75pt}}
+  %%%%%%%%%% 正文部分内容  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \mainmatter\defaultfont\sloppy\raggedbottom
+  \renewcommand{\ALC@linenosize}{\xiaosi}
+  \renewcommand\arraystretch{1.5}
+  \setlength{\intextsep}{2pt}
+  \setlength{\abovecaptionskip}{2pt}
+  \setlength{\belowcaptionskip}{2pt}
+  \include{body/chapter01}
+  \include{body/chapter02}
+  \include{body/chapter03}
+  \include{body/chapter04}
+  \include{body/chapter05}
+  \include{body/chapter06}
+  %%%%%%%%%% 正文部分内容  %%%%%%%%%%
 
-    \renewcommand\mainmatter{%
-      \if@openright\cleardoublepage\else\clearpage\fi
-      \@mainmattertrue
-      \pagenumbering{arabic}
-    \pagestyle{XDU@main}}
-    \newcommand\comtinuematter{%
-      \if@openright\cleardoublepage\else\clearpage\fi
-    \@mainmattertrue}
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    %\renewcommand{\CJKglue}{\hskip 0.5pt plus \baselineskip}
-
-    %\addcontentsline{toc}{chapter}{摘\qquad 要}
-    % \chapter*{\centering\hei\xiaoer 摘\qquad 要}
-    %\clearpage
-    \begin{center}%文本居中显示
-      {
-        \vspace*{11pt}
-      \hei\sanhao{摘\quad 要}}
-      \vspace{7pt}
-
-    \end{center}
-    \thispagestyle{cchair}
-    \pagestyle{cchair}
-
-    \song\xiaosi\setlength{\baselineskip}{20pt}
-    \setlength\parindent{2em}\@cabstract
-    \vspace{\baselineskip}
-
-    %\hangafter=1\hangindent=52.3pt\noindent   %如果取消该行注释，关键词换行时将会自动缩进
-
-    {{\hei\xiaosi 关键词：} \@ckeywords}
-
-    %%%%%%%%%%%%%%%%%%% ------ 英文摘要 English Abstract；-----
-    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \clearpage
-    %\addcontentsline{toc}{chapter}{Abstract}
-    \begin{center}%文本居中显示
-      {
-        \vspace*{-4pt}
-      \sanhao\bf \sf{Abstract}}
-      \vspace*{1.45pt}
-
-    \end{center}
-    % \chapter*{\centering\xiaoer \bf{Abstract}}
-    \thispagestyle{echair}
-    \pagestyle{echair}
-    %\vspace{\baselineskip}
-    \newcommand{\enabstractname}{Abstract}
-    \setlength{\baselineskip}{20pt}\setlength\parindent{1em}\@eabstract
-    \vspace{\baselineskip}
-    %\hangafter=1\hangindent=60pt\noindent  %如果取消该行注释，KEY WORDS 换行时将会自动缩进
-    \noindent
-    {{\xiaosi\textbf{~~~~Key Words:}} \@ekeywords}
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    \clearpage
-    \newcommand{\loflabel}{图~}
-    \renewcommand{\numberline}[1]{\song\xiaosi\loflabel~#1\hspace*{\baselineskip}}
-    %\addcontentsline{toc}{chapter}{图片索引}
-    %\listoffigures
-
-    \clearpage
-    \newcommand{\lotlabel}{表~}
-    \renewcommand{\numberline}[1]{\song\xiaosi\lotlabel~#1\hspace*{\baselineskip}}
-    %\addcontentsline{toc}{chapter}{表格索引}
-    %\listoftables
-    %\clearpage{\pagestyle{empty}\cleardoublepage}
-    %\clearpage{\pagestyle{empty}\cleardoublepage}
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%-------------目录部分------------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % \pagestyle{caffil}
-    %\defaultfont\tableofcontents   %目录方法就放哪
-    %\defaultfont
-    \defaultfont\tableofcontents   %目录方法就放哪
-    \thispagestyle{caffil}
-
-    %%%%%%%%%% 正文部分内容  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \mainmatter\defaultfont\sloppy\raggedbottom
-    \renewcommand{\ALC@linenosize}{\xiaosi}
-    \renewcommand\arraystretch{1.5}
-    \setlength{\intextsep}{2pt}
-    \setlength{\abovecaptionskip}{2pt}
-    \setlength{\belowcaptionskip}{2pt}
-    \include{body/chapter01}
-    \include{body/chapter02}
-    \include{body/chapter03}
-    \include{body/chapter04}
-    \include{body/chapter05}
-    \include{body/chapter06}
-    %%%%%%%%%% 正文部分内容  %%%%%%%%%%
-
-    %%%%%%%%%%  参考文献  %%%%%%%%%%
-    \defaultfont
-    \bibliographystyle{NWNUThesis}
-    \phantomsection
-    \addcontentsline{toc}{chapter}{参考文献}            % 参考文献加入到中文目录
-    %\nocite{*}                                        %
-    % 若将此命令屏蔽掉，则未引用的文献不会出现在文后的参考文献中。
-    \bibliography{references}
-    \include{appendix/acknowledgements}
-    \include{appendix/appendix}
-    \include{appendix/publications}                   % 发表论文和参加科研情况说明
-    %              % 致谢
-    \clearpage
-  \end{CJK*}                                        % 结束中文字体使用
+  %%%%%%%%%%  参考文献  %%%%%%%%%%
+  \defaultfont
+  \bibliographystyle{NWNUThesis}
+  \phantomsection
+  \addcontentsline{toc}{chapter}{参考文献}            % 参考文献加入到中文目录
+  %\nocite{*}                                        %
+  % 若将此命令屏蔽掉，则未引用的文献不会出现在文后的参考文献中。
+  \bibliography{references}
+  \include{appendix/acknowledgements}
+  \include{appendix/appendix}
+  \include{appendix/publications}                   % 发表论文和参加科研情况说明
+  %              % 致谢
+  \clearpage
 \end{sloppypar}
 \end{document}                                    % 结束全文

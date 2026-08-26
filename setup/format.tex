@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  run mode: pdfLatex on WinEdt10.3
+%  run mode: XeLaTeX
 %  !Mode: "Tex:Utf-8"
 %  Authors: Xiangdong Jia and Mangang Xie from UWC&IoT Lab
 %  Copyright: 泛在无线通信与物联网实验室@计算机科学与工程学院@西北师范大学
@@ -35,7 +35,7 @@
 \setlength{\textheight}{23cm}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%设置内容高度
 %\newcommand{\abstractname}{摘要}
 %\CJKcaption{gb_452}
-\CJKtilde  % 重新定义了波浪符~的意义
+%（\CJKtilde 是 CJK 宏包命令，xeCJK 下已移除）
 
 \newcommand\prechaptername{第}
 \newcommand\postchaptername{章}
@@ -88,11 +88,7 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%设置行距和段落间垂直距离
 
 \setlength{\baselineskip}{18pt}
-%\renewcommand{\CJKglue}{\hskip 0.5pt plus \baselineskip} %加大字间距，使每行 35 个字
-%\renewcommand{\CJKglue}{\hskip 1cm \baselineskip} %加大字间距，使每行 35 个字
-\renewcommand{\CJKglue}{\hskip 0.5pt plus \baselineskip} %加大字间距，使每行 35 个字
-%\renewcommand{\CJKglue}{\hskip 2pt plus 0.08\baselineskip}
-%\renewcommand{\CJKglue}{\hskip 1cm}
+%（\CJKglue 是 CJK 宏包命令，xeCJK 下中文字符间距自动处理，已移除）
 
 \makeatother
 
@@ -483,10 +479,11 @@
   \begin{titlepage}
     \begin{center}
 
-      \setlength{\@title@width}{1.6cm}%----------------------对封面分类号后面横线的长度进行定义
+      \setlength{\@title@width}{1.6cm}%-----封面分类号/UDC/密级/编号
+      % 后面下划线的统一长度（加宽以容纳 编号 值）-----
       {
         \begin{spacing}{2.1}
-          \begin{tabular}{lcclc}
+          \begin{tabular}{@{}p{2.2cm}c...}
 
             \sihao\fs{~~分~类~号}&\underline{\makebox[\@title@width][c]{\@chnunumer}}&\qquad
             \qquad \qquad \qquad \qquad \qquad \qquad &
