@@ -6,8 +6,8 @@
 %  Date: Last Updated May-30-2023 (migrated to XeLaTeX)
 %  Copyright UWC&IoT@NWNU
 %
-%  说明：所有宏包、格式规则、页面样式与自定义宏均已整合进
-%        nwnuthesis.sty，本文件只负责文档结构与内容。
+%  说明：所有宏包、格式规则、页面样式、排版布局与自定义宏均已整合进
+%        nwnuthesis.sty，本文件只负责文档结构与内容装配。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \def\usewhat{xelatex}                               % 编译方式 xelatex
 % 项目已整体迁移到 XeLaTeX，编译链：xelatex → bibtex → xelatex → xelatex
@@ -15,95 +15,36 @@
 \documentclass[a4paper,12pt,openany,twoside]{book}
 
 % 如果论文超过 60 页 可以使用 twoside 双面打印
-\usepackage{nwnuthesis}                  % 统一样式包：宏包、格式规则、页面样式、封面宏等
+\usepackage{nwnuthesis}                  % 统一样式包：宏包、格式规则、页面样式、封面/摘要排版等
 
-\graphicspath{{figures/}}
-
-% 定义所有的.eps 文件在 figures 子目录下
 \begin{document}
 \begin{sloppypar}                          % 开始全文
-  \pagestyle{empty}
-  \frontmatter                               % 论文导言部分，包括封面，中英文摘要和目录
-  \input{preface/cover}                      % 封面
-  \input{preface/abstract}                   % 中文摘要（\abstractZh, \keywordsZh）
-  \input{preface/abstract-eng}               % 英文摘要（\abstractEn, \keywordsEn）
+  \frontmatter                               % 论文导言部分（封面、中英文摘要、目录，均用罗马页码）
 
-  %%%%%%%%%%   目录   %%%%%%%%%%
-  % 中文目录
-  \thispagestyle{empty}
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %------------------- 封面 -------------------%
+  \input{preface/cover}                      % 封面信息配置
+  \makecover                                 % 排版封面（含声明/授权页）
 
-  %%%%%%%%%%%%   Abstract and Keywords   %%%%%%%%%%%%
-  \clearpage
-
-  %------------------- 中文摘要 -------------------%
-  \begin{center}%文本居中显示
-    {
-      \vspace*{11pt}
-    \hei\sanhao{摘\quad 要}}
-    \vspace{7pt}
-
-  \end{center}
-  \thispagestyle{cchair}
-  \pagestyle{cchair}
-
-  \makeatletter
-  \song\xiaosi\setlength{\baselineskip}{20pt}
-  \setlength\parindent{2em}\@abstractZh
-  \vspace{\baselineskip}
-
-  % 若取消上一行的注释，关键词换行时将会自动缩进
-  {{\hei\xiaosi 关键词：} \@keywordsZh}
-  \makeatother
-
-  %------------------- 英文摘要 English Abstract -------------------%
-  \clearpage
-  \begin{center}%文本居中显示
-    {
-      \vspace*{-4pt}
-    \sanhao\bf \sf{Abstract}}
-    \vspace*{1.45pt}
-
-  \end{center}
-  \thispagestyle{echair}
-  \pagestyle{echair}
-  \makeatletter
-  \setlength{\baselineskip}{20pt}\setlength\parindent{1em}\@abstractEn
-  \vspace{\baselineskip}
-  % 若取消上一行的注释，KEY WORDS 换行时将会自动缩进
-  \noindent
-  {{\xiaosi\textbf{~~~~Key Words:}} \@keywordsEn}
-  \makeatother
-
-  %------------------- 图表清单条目编号格式 -------------------%
-  \clearpage
-  \renewcommand{\numberline}[1]{\song\xiaosi\loflabel~#1\hspace*{\baselineskip}}
-
-  \clearpage
-  \renewcommand{\numberline}[1]{\song\xiaosi\lotlabel~#1\hspace*{\baselineskip}}
+  %------------------- 摘要 -------------------%
+  \input{preface/abstract}                   % 中文摘要与关键词（\abstractZh, \keywordsZh）
+  \input{preface/abstract-eng}               % 英文摘要与关键词（\abstractEn, \keywordsEn）
+  \abstractpageZh                            % 中文摘要页
+  \abstractpageEn                            % 英文摘要页
 
   %------------------- 目录 -------------------%
-  \defaultfont\tableofcontents   %目录方法就放哪
+  \defaultfont\tableofcontents
   \thispagestyle{caffil}
 
-  %%%%%%%%%% 正文部分内容  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  \mainmatter\defaultfont\sloppy\raggedbottom
-  \makeatletter
-  \renewcommand{\ALC@linenosize}{\xiaosi}
-  \makeatother
-  \renewcommand\arraystretch{1.5}
-  \setlength{\intextsep}{2pt}
-  \setlength{\abovecaptionskip}{2pt}
-  \setlength{\belowcaptionskip}{2pt}
+  %------------------- 正文 -------------------%
+  \mainmatter\defaultfont
   \include{body/chapter01}
   \include{body/chapter02}
   \include{body/chapter03}
   \include{body/chapter04}
   \include{body/chapter05}
   \include{body/chapter06}
-  %%%%%%%%%% 正文部分内容  %%%%%%%%%%
 
-  %%%%%%%%%%  参考文献  %%%%%%%%%%
+  %------------------- 参考文献 -------------------%
   \defaultfont
   \bibliographystyle{NWNUThesis}
   \phantomsection
@@ -111,10 +52,11 @@
   \nocite{*}                                        %
   % 若将此命令屏蔽掉，则未引用的文献不会出现在文后的参考文献中。
   \bibliography{references}
+
+  %------------------- 附录与致谢 -------------------%
   \include{appendix/acknowledgements}
   \include{appendix/appendix}
   \include{appendix/publications}                   % 发表论文和参加科研情况说明
-  %              % 致谢
   \clearpage
 \end{sloppypar}
 \end{document}                                    % 结束全文

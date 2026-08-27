@@ -114,6 +114,9 @@
 \def\tagform@#1{\maketag@@@{（\ignorespaces#1\unskip）}}
 \makeatother
 
+% 文档资源路径：插图目录
+\graphicspath{{figures/}}
+
 %---------------------------------------------------------------------------%
 %  2. 字体与字号命令
 %---------------------------------------------------------------------------%
@@ -215,6 +218,10 @@
 \newcommand{\loflabel}{图~}
 \newcommand{\lotlabel}{表~}
 
+% 图表清单条目编号格式（保留原行为：后一个定义覆盖前一个）
+\renewcommand{\numberline}[1]{\song\xiaosi\loflabel~#1\hspace*{\baselineskip}}
+\renewcommand{\numberline}[1]{\song\xiaosi\lotlabel~#1\hspace*{\baselineskip}}
+
 %---------------------------------------------------------------------------%
 %  6. 章节格式（titlesec）与内部命令
 %---------------------------------------------------------------------------%
@@ -308,13 +315,15 @@
 
 % 正文前使用罗马页码、正文使用阿拉伯页码
 \renewcommand\frontmatter{\clearpage
+  \pagestyle{empty}
   \@mainmatterfalse
-\pagenumbering{Roman}}          % 正文前罗马字体编号
+  \pagenumbering{Roman}}          % 正文前罗马字体编号
 \renewcommand\mainmatter{%
   \if@openright\cleardoublepage\else\clearpage\fi
   \@mainmattertrue
   \pagenumbering{arabic}
-\pagestyle{XDU@main}}
+  \pagestyle{XDU@main}
+  \sloppy\raggedbottom}
 \makeatother
 
 %---------------------------------------------------------------------------%
@@ -345,6 +354,15 @@
 
 \captionsetup[figure]{skip=8pt}
 \captiondelim{~~~~}               % longtable 表头分隔符
+
+% 正文排印细节
+\renewcommand\arraystretch{1.5}
+\setlength{\intextsep}{2pt}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{2pt}
+\makeatletter
+\renewcommand{\ALC@linenosize}{\xiaosi}
+\makeatother
 
 %---------------------------------------------------------------------------%
 %  9. 定理配置与算法
@@ -647,6 +665,39 @@
       \@signDateLabel \makebox[1.4cm][s]{}
     }
   \end{flushright}
+
+  % 封面部分结束后回到空白页，供摘要使用
+  \clearpage
+  \thispagestyle{empty}
+}
+
+% --- 摘要页排版 ---
+\newcommand{\abstractpageZh}{%
+  \clearpage
+  \begin{center}%文本居中显示
+    {\vspace*{11pt}\hei\sanhao{摘\quad 要}}
+    \vspace{7pt}
+  \end{center}
+  \thispagestyle{cchair}
+  \pagestyle{cchair}
+  \song\xiaosi\setlength{\baselineskip}{20pt}
+  \setlength\parindent{2em}\@abstractZh
+  \vspace{\baselineskip}
+  {{\hei\xiaosi 关键词：} \@keywordsZh}
+}
+
+\newcommand{\abstractpageEn}{%
+  \clearpage
+  \begin{center}%文本居中显示
+    {\vspace*{-4pt}\sanhao\bf \sf{Abstract}}
+    \vspace*{1.45pt}
+  \end{center}
+  \thispagestyle{echair}
+  \pagestyle{echair}
+  \setlength{\baselineskip}{20pt}\setlength\parindent{1em}\@abstractEn
+  \vspace{\baselineskip}
+  \noindent
+  {{\xiaosi\textbf{~~~~Key Words:}} \@keywordsEn}
 }
 
 \makeatother
