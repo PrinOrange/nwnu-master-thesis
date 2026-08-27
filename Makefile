@@ -23,10 +23,7 @@ XELATEX := xelatex
 SOURCES := $(MAIN).tex \
            references.bib \
            NWNUThesis.bst \
-           artratex.sty \
-           setup/package.tex \
-           setup/format.tex \
-           setup/bibspacing.sty \
+           nwnuthesis.sty \
            $(wildcard body/*.tex) \
            $(wildcard appendix/*.tex) \
            $(wildcard preface/*.tex)

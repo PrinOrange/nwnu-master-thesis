@@ -5,6 +5,9 @@
 %  Authors: Xiangdong Jia
 %  Date: Last Updated May-30-2023 (migrated to XeLaTeX)
 %  Copyright UWC&IoT@NWNU
+%
+%  说明：所有宏包、格式规则、页面样式与自定义宏均已整合进
+%        nwnuthesis.sty，本文件只负责文档结构与内容。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \def\usewhat{xelatex}                               % 编译方式 xelatex
 % 项目已整体迁移到 XeLaTeX，编译链：xelatex → bibtex → xelatex → xelatex
@@ -12,21 +15,15 @@
 \documentclass[a4paper,12pt,openany,twoside]{book}
 
 % 如果论文超过 60 页 可以使用 twoside 双面打印
-\input{setup/package}                      % 定义本文所使用宏包
+\usepackage{nwnuthesis}                  % 统一样式包：宏包、格式规则、页面样式、封面宏等
+
 \graphicspath{{figures/}}
-\usepackage{amsmath}                       % 数学公式支持
-\usepackage{url}
-\usepackage{enumerate}
-\DeclareCaptionFont{myfont}{\fontsize{10.5pt}{10.5pt}\selectfont}
-\captionsetup[algorithm]{font=myfont}
 
 % 定义所有的.eps 文件在 figures 子目录下
 \begin{document}
 \begin{sloppypar}                          % 开始全文
   \pagestyle{empty}
-  \input{setup/format}                       % 完成对论文各个部分格式的设置
-
-  \frontmatter                               % 以下是论文导言部分，包括论文的封面，中英文摘要和中文目录
+  \frontmatter                               % 论文导言部分，包括封面，中英文摘要和目录
   \input{preface/cover}                      % 封面
   \input{preface/abstract}                   % 中文摘要（\cabstract, \ckeywords）
   \input{preface/abstract-eng}               % 英文摘要（\eabstract, \ekeywords）
@@ -36,78 +33,10 @@
   \thispagestyle{empty}
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Abstract and Keywords
-  % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+  %%%%%%%%%%%%   Abstract and Keywords   %%%%%%%%%%%%
   \clearpage
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%以下是设置页眉页脚的代码
-  \fancypagestyle{plain}{%为了章首页
-    \fancyhf{}
-    \fancyhead[C]{\wuhao\songti\leftmark} %奇数页，章标题
-    \fancyfoot[C]{\song\wuhao ~\thepage~}
-    \renewcommand\headrulewidth{0.75pt}%%%%%%%%%%%%%%%%%该数值为页眉线的粗细设置
-  \renewcommand{\footrulewidth}{0pt}}
-
-  \fancypagestyle{cchair}{%为了摘要
-    \fancyhf{}
-    \fancyhead[CO]{\zihao{5}\songti 摘\qquad 要}
-    \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
-    \fancyfoot[C]{\wuhao\thepage}
-    \setcounter{page}{1}%当前页设置成首页
-    \renewcommand{\headrulewidth}{0.75pt}
-  \renewcommand{\footrulewidth}{0pt}}
-  \fancypagestyle{echair}{%为了 abstract
-    \fancyhf{}
-    \fancyhead[CO]{\zihao{5}\songti Abstract}
-    \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
-    \fancyfoot[C]{\wuhao\thepage}
-    \renewcommand{\headrulewidth}{0.75pt}
-  \renewcommand{\footrulewidth}{0pt}}
-
-  \def\@caffil{%
-    \let\@oddhead\@empty%
-    \let\@evenhead\@empty%
-    \let\@oddfoot\@empty%
-  \let\@evenfoot\@empty}
-
-  \fancypagestyle{caffil}{%为了目录
-    \fancyhf{}
-    \fancyhead[CO]{\wuhao\songti\leftmark}
-    \fancyfoot[C]{\wuhao\thepage}
-    \fancyhead[CE]{\wuhao\songti\@cheading}
-    \renewcommand{\headrulewidth}{0.75pt}
-  \renewcommand{\footrulewidth}{0pt}}
-
-  \renewcommand\frontmatter{%
-    \if@openright\cleardoublepage\else\clearpage\fi
-    \@mainmatterfalse
-    \pagenumbering{Roman}
-  \pagestyle{caffil}}
-
-  \def\ps@XDU@main{%
-    \let\@oddhead\@empty%
-    \let\@evenhead\@empty%
-    \let\@oddfoot\@empty%
-  \let\@evenfoot\@empty}
-
-  \fancypagestyle{XDU@main}{%为了主体
-    \fancyhead[CO]{\wuhao\songti\leftmark} %奇数页，章标题
-    \fancyfoot[C]{\song\wuhao ~\thepage~}
-    \fancyhead[CE]{\wuhao\songti\@cheading} %论文题目
-    \fancyfoot[C]{\song\wuhao ~\thepage~}
-  \renewcommand\headrulewidth{0.75pt}}
-
-  \renewcommand\mainmatter{%
-    \if@openright\cleardoublepage\else\clearpage\fi
-    \@mainmattertrue
-    \pagenumbering{arabic}
-  \pagestyle{XDU@main}}
-  \newcommand\comtinuematter{%
-    \if@openright\cleardoublepage\else\clearpage\fi
-  \@mainmattertrue}
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+  %------------------- 中文摘要 -------------------%
   \begin{center}%文本居中显示
     {
       \vspace*{11pt}
@@ -118,16 +47,16 @@
   \thispagestyle{cchair}
   \pagestyle{cchair}
 
+  \makeatletter
   \song\xiaosi\setlength{\baselineskip}{20pt}
   \setlength\parindent{2em}\@cabstract
   \vspace{\baselineskip}
 
   % 若取消上一行的注释，关键词换行时将会自动缩进
-
   {{\hei\xiaosi 关键词：} \@ckeywords}
+  \makeatother
 
-  %%%%%%%%%%%%%%%%%%% ------ 英文摘要 English Abstract；-----
-  % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %------------------- 英文摘要 English Abstract -------------------%
   \clearpage
   \begin{center}%文本居中显示
     {
@@ -138,29 +67,30 @@
   \end{center}
   \thispagestyle{echair}
   \pagestyle{echair}
-  \newcommand{\enabstractname}{Abstract}
+  \makeatletter
   \setlength{\baselineskip}{20pt}\setlength\parindent{1em}\@eabstract
   \vspace{\baselineskip}
   % 若取消上一行的注释，KEY WORDS 换行时将会自动缩进
   \noindent
   {{\xiaosi\textbf{~~~~Key Words:}} \@ekeywords}
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \makeatother
 
+  %------------------- 图表清单条目编号格式 -------------------%
   \clearpage
-  \newcommand{\loflabel}{图~}
   \renewcommand{\numberline}[1]{\song\xiaosi\loflabel~#1\hspace*{\baselineskip}}
 
   \clearpage
-  \newcommand{\lotlabel}{表~}
   \renewcommand{\numberline}[1]{\song\xiaosi\lotlabel~#1\hspace*{\baselineskip}}
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%-------------目录部分------------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %------------------- 目录 -------------------%
   \defaultfont\tableofcontents   %目录方法就放哪
   \thispagestyle{caffil}
 
   %%%%%%%%%% 正文部分内容  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \mainmatter\defaultfont\sloppy\raggedbottom
+  \makeatletter
   \renewcommand{\ALC@linenosize}{\xiaosi}
+  \makeatother
   \renewcommand\arraystretch{1.5}
   \setlength{\intextsep}{2pt}
   \setlength{\abovecaptionskip}{2pt}
