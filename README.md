@@ -15,11 +15,9 @@
 ```
 .
 ├── main.tex            # 主文档：组织结构、正文与参考文献引入
-├── nwnuthesis.sty      # 统一样式包
+├── nwnuthesis.sty      # 统一样式包：格式规则、页面样式、封面/声明/授权排版
 ├── preface/            # 导言部分
-│   ├── cover.tex           # 封面信息配置（标题、作者、导师、专业等）
-│   ├── declaration.tex     # 原创性声明
-│   ├── copyright.tex       # 版权使用授权书
+│   ├── cover.tex           # 封面信息配置（标题、作者、导师、专业、日期等）
 │   ├── abstract.tex        # 中文摘要与关键词
 │   └── abstract-eng.tex    # 英文摘要与关键词
 ├── body/               # 正文各章（chapter01 ~ chapter06）

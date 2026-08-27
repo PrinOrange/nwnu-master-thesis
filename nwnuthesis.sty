@@ -509,24 +509,24 @@
 \def\cheadinga#1{\def\@cheadinga{#1}}\def\@cheadinga{}
 \def\cheadingb#1{\def\@cheadingb{#1}}\def\@cheadingb{}
 
-% 版权使用授权书用到的定义
-\def\banquanshiyongshouquan#1{\def\@banquanshiyongshouquan{#1}}\def\@banquanshiyongshouquan{}
-\def\banquanshiyongshouquanzhengwena#1{\def\@banquanshiyongshouquanzhengwena{#1}}\def\@banquanshiyongshouquanzhengwena{}
-\def\banquanshiyongshouquanzhengwenb#1{\def\@banquanshiyongshouquanzhengwenb{#1}}\def\@banquanshiyongshouquanzhengwenb{}
-\def\gongjuren#1{\def\@gongjuren{#1}}\def\@gongjuren{}
+% 版权使用授权书用到的定义（固定文字，可通过同名命令覆盖）
+\def\banquanshiyongshouquan#1{\def\@banquanshiyongshouquan{#1}}\def\@banquanshiyongshouquan{西北师范大学学位论文版权使用授权书}
+\def\banquanshiyongshouquanzhengwena#1{\def\@banquanshiyongshouquanzhengwena{#1}}\def\@banquanshiyongshouquanzhengwena{本学位论文作者完全了解西北师范大学有关保留、使用学位论文的规定，有权保留并向国家有关部门或机构送交论文的纸质版和电子版，允许论文被查阅和借阅。本人授权西北师范大学可以将学位论文的全部或部分内容编入有关数据库进行检索，可以采用影印、缩印或扫描等复制手段保存、汇编学位论文，可以公开学位论文的全部或部分内容。}
+\def\banquanshiyongshouquanzhengwenb#1{\def\@banquanshiyongshouquanzhengwenb{#1}}\def\@banquanshiyongshouquanzhengwenb{（保密的学位论文在解密后适用本授权书）}
+\def\gongjuren#1{\def\@gongjuren{#1}}\def\@gongjuren{~~~~~~~~}
 
-% 原创性声明用到的定义
+% 原创性声明用到的定义（固定文字，可通过同名命令覆盖）
 \def\declarecontent#1{\def\@declarecontent{#1}}\def\@declarecontent{}
-\def\authorizationtitle#1{\def\@authorizationtitle{#1}}\def\@authorizationtitle{}
-\def\authorizationcontent#1{\def\@authorizationcontent{#1}}\def\@authorizationcontent{}
+\def\authorizationtitle#1{\def\@authorizationtitle{#1}}\def\@authorizationtitle{西北师范大学学位论文原创性声明}
+\def\authorizationcontent#1{\def\@authorizationcontent{#1}}\def\@authorizationcontent{本人郑重声明：所呈交的学位论文是本人在导师的指导下独立进行研究工作所取得的成果。除文中已经注明引用的内容外，本论文不含任何其他个人或集体已经发表或撰写过的作品成果。对本文的研究做出重要贡献的个人和集体，均已在文中以明确方式标明。因本学位论文引起的法律后果完全由本人承担。}
 \def\authorizationcontentone#1{\def\@authorizationcontentone{#1}}\def\@authorizationcontentone{}
 \def\authorizationcontenttwo#1{\def\@authorizationcontenttwo{#1}}\def\@authorizationcontenttwo{}
 \def\authorizationcontentthree#1{\def\@authorizationcontentthree{#1}}\def\@authorizationcontentthree{}
 \def\authorizationadd#1{\def\@authorizationadd{#1}}\def\@authorizationadd{}
-\def\ownersigncap#1{\def\@ownersigncap{#1}}\def\@ownersigncap{}
+\def\ownersigncap#1{\def\@ownersigncap{#1}}\def\@ownersigncap{学位论文作者签名:~~~~~}
 \def\authorsigncap#1{\def\@authorsigncap{#1}}\def\@authorsigncap{}
-\def\supervisorsigncap#1{\def\@supervisorsigncap{#1}}\def\@supervisorsigncap{}
-\def\signdatecap#1{\def\@signdatecap{#1}}\def\@signdatecap{}
+\def\supervisorsigncap#1{\def\@supervisorsigncap{#1}}\def\@supervisorsigncap{导师签名:~~~~~~~~~~~~~~~~~~~~~}
+\def\signdatecap#1{\def\@signdatecap{#1}}\def\@signdatecap{签字日期:~~~~~~~~~年~~~~~~~~月~~~~~~~~日}
 
 % 摘要与关键词
 \long\def\cabstract#1{\long\def\@cabstract{#1}}\long\def\@cabstract{}
