@@ -26,8 +26,10 @@
   \makecover                                 % 排版封面（含声明/授权页）
 
   %------------------- 摘要 -------------------%
-  \input{preface/abstract}                   % 中文摘要与关键词（\abstractZh, \keywordsZh）
-  \input{preface/abstract-eng}               % 英文摘要与关键词（\abstractEn, \keywordsEn）
+  \input{preface/abstract}                   % 中文摘要与关键词（\abstractZh,
+  % \keywordsZh）
+  \input{preface/abstract-eng}               % 英文摘要与关键词（\abstractEn,
+  % \keywordsEn）
   \abstractpageZh                            % 中文摘要页
   \abstractpageEn                            % 英文摘要页
 
@@ -47,8 +49,6 @@
   %------------------- 参考文献 -------------------%
   \defaultfont
   \bibliographystyle{NWNUThesis}
-  \phantomsection
-  \addcontentsline{toc}{chapter}{参考文献}            % 参考文献加入到中文目录
   \nocite{*}                                        %
   % 若将此命令屏蔽掉，则未引用的文献不会出现在文后的参考文献中。
   \bibliography{references}

@@ -222,6 +222,27 @@
 \renewcommand{\numberline}[1]{\song\xiaosi\loflabel~#1\hspace*{\baselineskip}}
 \renewcommand{\numberline}[1]{\song\xiaosi\lotlabel~#1\hspace*{\baselineskip}}
 
+% \chapter*（无编号章）自动写入目录
+\newif\ifnwnuSchapterToc
+\nwnuSchapterToctrue
+
+% 目录/图表清单内部也调用 \chapter*，需临时关闭自动写目录
+\let\nwnuTableofcontents\tableofcontents
+\renewcommand\tableofcontents{%
+  \nwnuSchapterTocfalse
+  \nwnuTableofcontents
+\nwnuSchapterToctrue}
+\let\nwnuListoffigures\listoffigures
+\renewcommand\listoffigures{%
+  \nwnuSchapterTocfalse
+  \nwnuListoffigures
+\nwnuSchapterToctrue}
+\let\nwnuListoftables\listoftables
+\renewcommand\listoftables{%
+  \nwnuSchapterTocfalse
+  \nwnuListoftables
+\nwnuSchapterToctrue}
+
 %---------------------------------------------------------------------------%
 %  6. 章节格式（titlesec）与内部命令
 %---------------------------------------------------------------------------%
@@ -254,6 +275,10 @@
   \@makeschapterhead{#1}%
   \def\leftmark{#1}
   \@afterheading
+  \fi
+  % 无编号章自动写入目录（目录/清单内部调用时由标志位跳过）
+  \ifnwnuSchapterToc
+  \addcontentsline{toc}{chapter}{#1}%
 \fi}
 \makeatother
 
@@ -317,13 +342,13 @@
 \renewcommand\frontmatter{\clearpage
   \pagestyle{empty}
   \@mainmatterfalse
-  \pagenumbering{Roman}}          % 正文前罗马字体编号
+\pagenumbering{Roman}}          % 正文前罗马字体编号
 \renewcommand\mainmatter{%
   \if@openright\cleardoublepage\else\clearpage\fi
   \@mainmattertrue
   \pagenumbering{arabic}
   \pagestyle{XDU@main}
-  \sloppy\raggedbottom}
+\sloppy\raggedbottom}
 \makeatother
 
 %---------------------------------------------------------------------------%
