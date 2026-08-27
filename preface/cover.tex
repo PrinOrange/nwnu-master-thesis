@@ -1,9 +1,15 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  封面信息配置：西北师范大学硕士学位论文（专业学位）
+%  各字段由 nwnuthesis.sty 中的 \makecover 排版输出
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%---------- 封面头部信息（分类号 / UDC / 密级 / 编号） ----------%
 \chnunumer{}%分类号
 \cclassnumber{}%UDC
 \cnumber{}%密级
 \csecret{10736}%编号
 
-\cmajor{\centering }
+%%---------- 论文标题与校名（中英文） ----------%
 \cheadinga{硕~士~学~位~论~文}
 \cheadingb{（专~业~学~位）}
 \cheading{西北师范大学硕士学位论文}
@@ -11,6 +17,7 @@
 \etitle{\textbf{Multi-source Optimal Scheduling and Information
 Timeliness for 6G Internet of Things System}}        %封面英文标题
 
+%%---------- 作者与专业信息（中文） ----------%
 \cauthor{李伟明}                                  %研究生姓名
 \csupervisor{张伟明~~教授}
 %指导教师姓名、职称：教授/副教授/正高级工程师/高级工程师/研究员/副研究员
@@ -18,23 +25,25 @@ Timeliness for 6G Internet of Things System}}        %封面英文标题
 %实践指导教师姓名、职称：教授/副教授/正高级工程师/高级工程师/研究员/副研究员
 \csubjecttitle{电子信息}                          %专业学位类别：电子信息/职业技术教育
 \caffil{计算机技术}                               %专业学位领域：计算机技术/软件工程/人工智能
+\cmajor{}                                         %专项计划（一般留空）
 
+%%---------- 作者与日期（英文） ----------%
 \ename{Li Weiming}                               %研究生姓名英文
 \esupervisor{Zhang Weiming}                      %指导教师姓名英文
 \elevel{Professor}                               %指导教师职称英文
 %实践导师英文
 \edate{May,~2023}                                %时间英文
-\renewcommand{\today}{二〇二三年五月}               %封面中文日期
+\cdate{二〇二三年五月}                            %封面中文日期
 
-% 以下签名相关命令被原创性声明页与版权使用授权书页共用：
+%%---------- 声明页与授权页共用的签名信息 ----------%
 \gongjuren{~~~~~~~~}                        % 声明页/授权页标题下的占位
 \ownersigncap{学位论文作者签名:~~~~~}
 \supervisorsigncap{导师签名:~~~~~~~~~~~~~~~~~~~~~}
 \signdatecap{签字日期:~~~~~~~~~年~~~~~~~~月~~~~~~~~日}
 
+%%---------- 引入声明与授权内容，排版封面 ----------%
 \input{preface/declaration}
 \input{preface/copyright}
-
 \makecover
 
 \clearpage

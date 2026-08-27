@@ -504,7 +504,7 @@
 \def\cauthortitle#1{\def\@cauthortitle{#1}}\def\@cauthortitle{}
 \def\csupervisor#1{\def\@csupervisor{#1}}\def\@csupervisor{}
 \def\csupervisortitle#1{\def\@csupervisortitle{#1}}\def\@csupervisortitle{}
-\def\cdate#1{\def\@cdate{#1}}\def\@cdate{}     % 今天的日期
+\def\cdate#1{\def\@cdate{#1}}\def\@cdate{}     % 封面中文日期
 \def\untitle#1{\def\@untitle{#1}}\def\@untitle{}
 \def\declaretitle#1{\def\@declaretitle{#1}}\def\@declaretitle{}
 \def\authorinformationtitle#1{\def\@authorinformationtitle{#1}}\def\@authorinformationtitle{}
@@ -639,7 +639,7 @@
           \sihao\song\underline{\makebox[\@titlec@width][l]{\qquad\@cmajor}}\\
           \vspace{2.0\baselineskip}
 
-          \sanhao\hei{\makebox[\@title@width][l]{~~~~~~~~~~\today}}
+          \sanhao\hei{\makebox[\@title@width][l]{~~~~~~~~~~\@cdate}}
           \\%%%封面第一页的日期
 
         \end{spacing}
