@@ -479,12 +479,8 @@
 \addtolength{\bibsep}{5pt} % 增加参考文献间的垂直间距
 \setlength{\bibhang}{2em}  % 每个条目自第二行起缩进的距离
 
-% 参考文献引用作为上标出现
-\newcommand{\scite}[1]{\scalebox{1.1}[1.1]{\textsuperscript{\cite{#1}}}}
-\newcommand{\mycite}[1]{\scalebox{1.3}[1.3]{\raisebox{-0.65ex}{\cite{#1}}}}
-
-% 引用格式
-\bibpunct{[}{]}{,}{s}{}{,}
+% 引用格式：行内编号（GB/T 7714 顺序编码制），使用 \cite{} 引用
+\bibpunct{[}{]}{,}{n}{}{,}
 
 %---------------------------------------------------------------------------%
 %  12. 封面、摘要、版权、致谢格式定义

@@ -37,7 +37,7 @@
 1. 编辑 `preface/cover.tex`，填写封面信息：论文标题（中英文）、作者、导师、专业学位类别/领域、日期等。
 2. 分别在 `preface/abstract.tex` 与 `preface/abstract-eng.tex` 中撰写中英文摘要及关键词。
 3. 在 `body/chapter01.tex` ~ `body/chapter06.tex` 中按章撰写正文；如需增删章节，请同步修改 `main.tex` 中的 `\include` 列表。
-4. 将参考文献条目加入 `references.bib`，在正文中通过 `\cite{}`、`\scite{}`、`\mycite{}` 引用。
+4. 将参考文献条目加入 `references.bib`，在正文中通过 `\cite{}` 引用（行内编号）。
 
 ### 编译
 
