@@ -25,8 +25,8 @@
   \pagestyle{empty}
   \frontmatter                               % 论文导言部分，包括封面，中英文摘要和目录
   \input{preface/cover}                      % 封面
-  \input{preface/abstract}                   % 中文摘要（\cabstract, \ckeywords）
-  \input{preface/abstract-eng}               % 英文摘要（\eabstract, \ekeywords）
+  \input{preface/abstract}                   % 中文摘要（\abstractZh, \keywordsZh）
+  \input{preface/abstract-eng}               % 英文摘要（\abstractEn, \keywordsEn）
 
   %%%%%%%%%%   目录   %%%%%%%%%%
   % 中文目录
@@ -49,11 +49,11 @@
 
   \makeatletter
   \song\xiaosi\setlength{\baselineskip}{20pt}
-  \setlength\parindent{2em}\@cabstract
+  \setlength\parindent{2em}\@abstractZh
   \vspace{\baselineskip}
 
   % 若取消上一行的注释，关键词换行时将会自动缩进
-  {{\hei\xiaosi 关键词：} \@ckeywords}
+  {{\hei\xiaosi 关键词：} \@keywordsZh}
   \makeatother
 
   %------------------- 英文摘要 English Abstract -------------------%
@@ -68,11 +68,11 @@
   \thispagestyle{echair}
   \pagestyle{echair}
   \makeatletter
-  \setlength{\baselineskip}{20pt}\setlength\parindent{1em}\@eabstract
+  \setlength{\baselineskip}{20pt}\setlength\parindent{1em}\@abstractEn
   \vspace{\baselineskip}
   % 若取消上一行的注释，KEY WORDS 换行时将会自动缩进
   \noindent
-  {{\xiaosi\textbf{~~~~Key Words:}} \@ekeywords}
+  {{\xiaosi\textbf{~~~~Key Words:}} \@keywordsEn}
   \makeatother
 
   %------------------- 图表清单条目编号格式 -------------------%

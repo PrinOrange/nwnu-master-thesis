@@ -31,14 +31,13 @@
 \RequirePackage{fontspec}
 \setmainfont{Times New Roman}
 
-% 将自定义 CJK 字体族（\song/\hei/\kai/\fs/\li/\FSGB 即 \CJKfamily{...}）
+% 将自定义 CJK 字体族（\song/\hei/\kai/\fs/\li 即 \CJKfamily{...}）
 % 映射到 Windows 系统字体
 \setCJKfamilyfont{song}{SimSun}
 \setCJKfamilyfont{hei}{SimHei}
 \setCJKfamilyfont{kai}{KaiTi}
 \setCJKfamilyfont{fs}{FangSong}
 \setCJKfamilyfont{li}{LiSu}
-\setCJKfamilyfont{FSGB}{FangSong}
 
 % 页面几何
 \RequirePackage{geometry}
@@ -119,7 +118,6 @@
 %  2. 字体与字号命令
 %---------------------------------------------------------------------------%
 \newcommand{\song}{\CJKfamily{song}}        % 宋体
-\newcommand{\FSGB}{\CJKfamily{FSGB}}        % 仿宋 GB2312
 \newcommand{\fs}{\CJKfamily{fs}}            % 仿宋体
 \newcommand{\kai}{\CJKfamily{kai}}          % 楷体
 \newcommand{\hei}{\CJKfamily{hei}}          % 黑体
@@ -279,7 +277,7 @@
 \fancypagestyle{cchair}{%         % 中文摘要
   \fancyhf{}
   \fancyhead[CO]{\zihao{5}\songti 摘\qquad 要}
-  \fancyhead[CE]{\wuhao\songti\@cheading} % 论文题目
+  \fancyhead[CE]{\wuhao\songti\@runningHeading} % 论文题目
   \fancyfoot[C]{\wuhao\thepage}
   \setcounter{page}{1}% 当前页设为首页
   \renewcommand{\headrulewidth}{0.75pt}
@@ -288,7 +286,7 @@
 \fancypagestyle{echair}{%         % 英文摘要
   \fancyhf{}
   \fancyhead[CO]{\zihao{5}\songti Abstract}
-  \fancyhead[CE]{\wuhao\songti\@cheading} % 论文题目
+  \fancyhead[CE]{\wuhao\songti\@runningHeading} % 论文题目
   \fancyfoot[C]{\wuhao\thepage}
   \renewcommand{\headrulewidth}{0.75pt}
 \renewcommand{\footrulewidth}{0pt}}
@@ -297,7 +295,7 @@
   \fancyhf{}
   \fancyhead[CO]{\wuhao\songti\leftmark}
   \fancyfoot[C]{\wuhao\thepage}
-  \fancyhead[CE]{\wuhao\songti\@cheading}
+  \fancyhead[CE]{\wuhao\songti\@runningHeading}
   \renewcommand{\headrulewidth}{0.75pt}
 \renewcommand{\footrulewidth}{0pt}}
 
@@ -305,7 +303,7 @@
   \fancyhf{}
   \fancyhead[CO]{\wuhao\songti\leftmark} % 奇数页，章标题
   \fancyfoot[C]{\song\wuhao ~\thepage~}
-  \fancyhead[CE]{\wuhao\songti\@cheading} % 论文题目
+  \fancyhead[CE]{\wuhao\songti\@runningHeading} % 论文题目
 \renewcommand\headrulewidth{0.75pt}}
 
 % 正文前使用罗马页码、正文使用阿拉伯页码
@@ -348,104 +346,47 @@
 \captionsetup[figure]{skip=8pt}
 \captiondelim{~~~~}               % longtable 表头分隔符
 
-\newcommand{\figref}[1]{{图~\ref{#1}}}
-\newcommand{\tabref}[1]{{表~\ref{#1}}}
-
 %---------------------------------------------------------------------------%
-%  9. 定理、定义、猜想类环境
+%  9. 定理配置与算法
 %---------------------------------------------------------------------------%
 \theorembodyfont{\song\rmfamily}
 \theoremheaderfont{\hei\rmfamily}
-\newtheorem{theorem}{\hei 定理~}[chapter]
-\newtheorem{lemma}{\hei 引理~}[chapter]
-\newtheorem{axiom}{\hei 公理~}[chapter]
-\newtheorem{proposition}{命题~}[chapter]
-\newtheorem{corollary}{推论~}[chapter]
-\newtheorem{definition}{定义~}[chapter]
-\newtheorem{conjecture}{猜想~}[chapter]
-\newtheorem{example}{例~}[chapter]
-\newtheorem{remark}{注~}[chapter]
 
 \floatname{algorithm}{算法}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
 
-% 表格单元格内换行
-\newcommand{\tabincell}[2]{%
-  \begin{tabular}{@{}#1@{}}#2
-\end{tabular}}
-
-\newenvironment{proof}{\noindent{\hei 证明：}}{\hfill $\square$ \vskip 4mm}
-\theoremsymbol{$\square$}
-
 % --- JXD 系列：定理/引理/推论/定义/命题（正文中使用的自定义环境） ---
-\newcounter{Theo}[chapter]
-\newenvironment{TheoremJXD}{\refstepcounter{Theo}\vspace{5pt}\indent
-\kaishu{\bfseries 定理\arabic{chapter}-\arabic{Theo}:}~}{\kaishu\vspace{-10pt}}
-\newcommand{\TheoremJXDref}[1]{{定理~\arabic{chapter}-\ref{#1}}}
+\newcounter{theorem}[chapter]
+\newenvironment{theorem}{\refstepcounter{theorem}\vspace{5pt}\indent
+\kaishu{\bfseries 定理\arabic{chapter}-\arabic{theorem}:}~}{\kaishu\vspace{-10pt}}
+\newcommand{\theoremRef}[1]{{定理~\arabic{chapter}-\ref{#1}}}
 
-\newcounter{Lemm}[chapter]
-\newenvironment{LemmaJXD}{\refstepcounter{Lemm}\vspace{5pt}\indent
-\kaishu{\bfseries 引理\arabic{chapter}-\arabic{Lemm}:}~}{\kaishu\vspace{-10pt}}
-\newcommand{\LemmaJXDref}[1]{{引理~\arabic{chapter}-\ref{#1}}}
+\newcounter{lemma}[chapter]
+\newenvironment{lemma}{\refstepcounter{lemma}\vspace{5pt}\indent
+\kaishu{\bfseries 引理\arabic{chapter}-\arabic{lemma}:}~}{\kaishu\vspace{-10pt}}
+\newcommand{\lemmaRef}[1]{{引理~\arabic{chapter}-\ref{#1}}}
 
-\newcounter{Corol}[chapter]
-\newenvironment{CorollaryJXD}{\refstepcounter{Corol}\vspace{5pt}\indent
-\kaishu{\bfseries 推论\arabic{chapter}-\arabic{Corol}:}~}{\kaishu\vspace{-10pt}}
-\newcommand{\CorollaryJXDref}[1]{{推论~\arabic{chapter}-\ref{#1}}}
+\newcounter{corollary}[chapter]
+\newenvironment{corollary}{\refstepcounter{corollary}\vspace{5pt}\indent
+  \kaishu{\bfseries
+推论\arabic{chapter}-\arabic{corollary}:}~}{\kaishu\vspace{-10pt}}
+\newcommand{\corollaryRef}[1]{{推论~\arabic{chapter}-\ref{#1}}}
 
-\newcounter{Defi}[chapter]
-\newenvironment{DefinitionJXD}{\refstepcounter{Defi}\vspace{5pt}\indent
-\kaishu{\bfseries 定义\arabic{chapter}-\arabic{Defi}:}~}{\kaishu\vspace{-10pt}}
-\newcommand{\DefinitionJXDref}[1]{{定义~\arabic{chapter}-\ref{#1}}}
+\newcounter{definition}[chapter]
+\newenvironment{definition}{\refstepcounter{definition}\vspace{5pt}\indent
+  \kaishu{\bfseries
+定义\arabic{chapter}-\arabic{definition}:}~}{\kaishu\vspace{-10pt}}
+\newcommand{\definitionRef}[1]{{定义~\arabic{chapter}-\ref{#1}}}
 
-\newcounter{Prop}[chapter]
-\newenvironment{PropositionJXD}{\refstepcounter{Prop}\vspace{5pt}\indent
-\kaishu{\bfseries 命题\arabic{chapter}-\arabic{Prop}:}~}{\kaishu\vspace{-10pt}}
-\newcommand{\PropositionJXDref}[1]{{命题~\arabic{chapter}-\ref{#1}}}
-
-%---------------------------------------------------------------------------%
-%  10. 附录格式
-%---------------------------------------------------------------------------%
-\newcounter{sectionAppen}
-\renewcommand{\thesectionAppen}{{\arabic{sectionAppen}}}
-\newcommand{\sectionAppenJXD}[1]{\par\noindent\refstepcounter{sectionAppen}{\sihao\textbf{%
-\thesectionAppen:~#1}}\par\setlength{\parindent}{2em}}
-
-\newcounter{subsectionAppen}
-\renewcommand{\thesubsectionAppen}{{\arabic{subsectionAppen}}}
-\newcommand{\subsectionAppenJXD}[1]{\vspace{8pt}\par\noindent\refstepcounter{subsectionAppen}{\sihao\textbf{\thesectionAppen.
-\thesubsectionAppen:~#1}}\par\setlength{\parindent}{2em}}
-
-\makeatletter
-\@addtoreset{subsectionAppen}{sectionAppen}
-\makeatother
-
-\newcommand{\AppendixJXDtitle}[2]{\clearpage{\quad\vspace{-1.2em}}\par
-\sanhao\hei\centering#1\vspace{1em}\par\centering#2\par\raggedright}
-
-\makeatletter
-\renewcommand\appendix{\par\raggedright
-  \setcounter{sectionAppen}{0}
-  \setcounter{subsectionAppen}{0}
-  \gdef\thesectionAppen{附录 \Roman{chapter}-\Alph{sectionAppen}~\vspace{8pt}}\par
-  \renewcommand{\theequation}{\Roman{chapter}-\Alph{sectionAppen}-\arabic{equation}}
-  \setcounter{equation}{0}\par
-  \@addtoreset{equation}{sectionAppen}\justifying
-}
-\makeatother
-
-\newcommand{\AppendixJXD}[2]{{\AppendixJXDtitle{#1}{#2}}\appendix{ }}
-
-\makeatletter
-\newenvironment{AppendixM}{\addcontentsline{toc}{section}{\song\quad 本章附录} \par
-\indent{}}{\hfill $\square$ \vskip 4mm\par
-  \renewcommand{\theequation}{\arabic{chapter}-\arabic{equation}\par}
-}
-\makeatother
+\newcounter{proposition}[chapter]
+\newenvironment{proposition}{\refstepcounter{proposition}\vspace{5pt}\indent
+  \kaishu{\bfseries
+命题\arabic{chapter}-\arabic{proposition}:}~}{\kaishu\vspace{-10pt}}
+\newcommand{\propositionRef}[1]{{命题~\arabic{chapter}-\ref{#1}}}
 
 %---------------------------------------------------------------------------%
-%  11. 参考文献
+%  10. 参考文献
 %---------------------------------------------------------------------------%
 \renewcommand{\bibname}{参考文献}
 
@@ -488,74 +429,51 @@
 \makeatletter
 
 % --- 封面字段 ---
-\def\ctitle#1{\def\@ctitle{#1}}\def\@ctitle{}
-\def\etitle#1{\def\@etitle{#1}}\def\@etitle{}
-\def\caffil#1{\def\@caffil{#1}}\def\@caffil{}
-\def\cmacrosubject#1{\def\@cmacrosubject{#1}}\def\@cmacrosubject{}
-\def\cmacrosubjecttitle#1{\def\@cmacrosubjecttitle{#1}}\def\@cmacrosubjecttitle{}
-\def\csubject#1{\def\@csubject{#1}}\def\@csubject{}
-\def\csubjecttitle#1{\def\@csubjecttitle{#1}}\def\@csubjecttitle{}
-\def\cmajor#1{\def\@cmajor{#1}}\def\@cmajor{}
-\def\cauthor#1{\def\@cauthor{#1}}\def\@cauthor{}
-\def\cauthortitle#1{\def\@cauthortitle{#1}}\def\@cauthortitle{}
-\def\csupervisor#1{\def\@csupervisor{#1}}\def\@csupervisor{}
-\def\csupervisortitle#1{\def\@csupervisortitle{#1}}\def\@csupervisortitle{}
-\def\cdate#1{\def\@cdate{#1}}\def\@cdate{}     % 封面中文日期
-\def\untitle#1{\def\@untitle{#1}}\def\@untitle{}
-\def\declaretitle#1{\def\@declaretitle{#1}}\def\@declaretitle{}
-\def\authorinformationtitle#1{\def\@authorinformationtitle{#1}}\def\@authorinformationtitle{}
+\def\titleZh#1{\def\@titleZh{#1}}\def\@titleZh{}
+\def\titleEn#1{\def\@titleEn{#1}}\def\@titleEn{}
+\def\degreeField#1{\def\@degreeField{#1}}\def\@degreeField{}
+\def\degreeCategory#1{\def\@degreeCategory{#1}}\def\@degreeCategory{}
+\def\coverSpecialPlan#1{\def\@coverSpecialPlan{#1}}\def\@coverSpecialPlan{}
+\def\authorZh#1{\def\@authorZh{#1}}\def\@authorZh{}
+\def\supervisorZh#1{\def\@supervisorZh{#1}}\def\@supervisorZh{}
+\def\coverDateZh#1{\def\@coverDateZh{#1}}\def\@coverDateZh{}     % 封面中文日期
 
 % 封面第一页用到的定义
-\def\cheadinga#1{\def\@cheadinga{#1}}\def\@cheadinga{}
-\def\cheadingb#1{\def\@cheadingb{#1}}\def\@cheadingb{}
+\def\coverHeadingOne#1{\def\@coverHeadingOne{#1}}\def\@coverHeadingOne{}
+\def\coverHeadingTwo#1{\def\@coverHeadingTwo{#1}}\def\@coverHeadingTwo{}
 
 % 版权使用授权书用到的定义（固定文字，可通过同名命令覆盖）
-\def\banquanshiyongshouquan#1{\def\@banquanshiyongshouquan{#1}}\def\@banquanshiyongshouquan{西北师范大学学位论文版权使用授权书}
-\def\banquanshiyongshouquanzhengwena#1{\def\@banquanshiyongshouquanzhengwena{#1}}\def\@banquanshiyongshouquanzhengwena{本学位论文作者完全了解西北师范大学有关保留、使用学位论文的规定，有权保留并向国家有关部门或机构送交论文的纸质版和电子版，允许论文被查阅和借阅。本人授权西北师范大学可以将学位论文的全部或部分内容编入有关数据库进行检索，可以采用影印、缩印或扫描等复制手段保存、汇编学位论文，可以公开学位论文的全部或部分内容。}
-\def\banquanshiyongshouquanzhengwenb#1{\def\@banquanshiyongshouquanzhengwenb{#1}}\def\@banquanshiyongshouquanzhengwenb{（保密的学位论文在解密后适用本授权书）}
-\def\gongjuren#1{\def\@gongjuren{#1}}\def\@gongjuren{~~~~~~~~}
+\def\copyrightTitle#1{\def\@copyrightTitle{#1}}\def\@copyrightTitle{西北师范大学学位论文版权使用授权书}
+\def\copyrightBody#1{\def\@copyrightBody{#1}}\def\@copyrightBody{本学位论文作者完全了解西北师范大学有关保留、使用学位论文的规定，有权保留并向国家有关部门或机构送交论文的纸质版和电子版，允许论文被查阅和借阅。本人授权西北师范大学可以将学位论文的全部或部分内容编入有关数据库进行检索，可以采用影印、缩印或扫描等复制手段保存、汇编学位论文，可以公开学位论文的全部或部分内容。}
+\def\copyrightConfidential#1{\def\@copyrightConfidential{#1}}\def\@copyrightConfidential{（保密的学位论文在解密后适用本授权书）}
+\def\signerLine#1{\def\@signerLine{#1}}\def\@signerLine{~~~~~~~~}
 
 % 原创性声明用到的定义（固定文字，可通过同名命令覆盖）
-\def\declarecontent#1{\def\@declarecontent{#1}}\def\@declarecontent{}
-\def\authorizationtitle#1{\def\@authorizationtitle{#1}}\def\@authorizationtitle{西北师范大学学位论文原创性声明}
-\def\authorizationcontent#1{\def\@authorizationcontent{#1}}\def\@authorizationcontent{本人郑重声明：所呈交的学位论文是本人在导师的指导下独立进行研究工作所取得的成果。除文中已经注明引用的内容外，本论文不含任何其他个人或集体已经发表或撰写过的作品成果。对本文的研究做出重要贡献的个人和集体，均已在文中以明确方式标明。因本学位论文引起的法律后果完全由本人承担。}
-\def\authorizationcontentone#1{\def\@authorizationcontentone{#1}}\def\@authorizationcontentone{}
-\def\authorizationcontenttwo#1{\def\@authorizationcontenttwo{#1}}\def\@authorizationcontenttwo{}
-\def\authorizationcontentthree#1{\def\@authorizationcontentthree{#1}}\def\@authorizationcontentthree{}
-\def\authorizationadd#1{\def\@authorizationadd{#1}}\def\@authorizationadd{}
-\def\ownersigncap#1{\def\@ownersigncap{#1}}\def\@ownersigncap{学位论文作者签名:~~~~~}
-\def\authorsigncap#1{\def\@authorsigncap{#1}}\def\@authorsigncap{}
-\def\supervisorsigncap#1{\def\@supervisorsigncap{#1}}\def\@supervisorsigncap{导师签名:~~~~~~~~~~~~~~~~~~~~~}
-\def\signdatecap#1{\def\@signdatecap{#1}}\def\@signdatecap{签字日期:~~~~~~~~~年~~~~~~~~月~~~~~~~~日}
+\def\declarationTitle#1{\def\@declarationTitle{#1}}\def\@declarationTitle{西北师范大学学位论文原创性声明}
+\def\declarationBody#1{\def\@declarationBody{#1}}\def\@declarationBody{本人郑重声明：所呈交的学位论文是本人在导师的指导下独立进行研究工作所取得的成果。除文中已经注明引用的内容外，本论文不含任何其他个人或集体已经发表或撰写过的作品成果。对本文的研究做出重要贡献的个人和集体，均已在文中以明确方式标明。因本学位论文引起的法律后果完全由本人承担。}
+\def\authorSignatureLabel#1{\def\@authorSignatureLabel{#1}}\def\@authorSignatureLabel{学位论文作者签名:~~~~~}
+\def\supervisorSignatureLabel#1{\def\@supervisorSignatureLabel{#1}}\def\@supervisorSignatureLabel{导师签名:~~~~~~~~~~~~~~~~~~~~~}
+\def\signDateLabel#1{\def\@signDateLabel{#1}}\def\@signDateLabel{签字日期:~~~~~~~~~年~~~~~~~~月~~~~~~~~日}
 
 % 摘要与关键词
-\long\def\cabstract#1{\long\def\@cabstract{#1}}\long\def\@cabstract{}
-\long\def\eabstract#1{\long\def\@eabstract{#1}}\long\def\@eabstract{}
-\def\ckeywords#1{\def\@ckeywords{#1}}\def\@ckeywords{}
-\def\ekeywords#1{\def\@ekeywords{#1}}\def\@ekeywords{}
+\long\def\abstractZh#1{\long\def\@abstractZh{#1}}\long\def\@abstractZh{}
+\long\def\abstractEn#1{\long\def\@abstractEn{#1}}\long\def\@abstractEn{}
+\def\keywordsZh#1{\def\@keywordsZh{#1}}\def\@keywordsZh{}
+\def\keywordsEn#1{\def\@keywordsEn{#1}}\def\@keywordsEn{}
 
 % 其余封面字段
-\def\cheading#1{\def\@cheading{#1}}\def\@cheading{}
-\def\cnumber#1{\def\@cnumber{#1}}\def\@cnumber{}
-\def\csecret#1{\def\@csecret{#1}}\def\@csecret{}
-\def\chnunumer#1{\def\@chnunumer{#1}}\def\@chnunumer{}
-\def\cclassnumber#1{\def\@cclassnumber{#1}}\def\@cclassnumber{}
-\def\chnuname#1{\def\@chnuname{#1}}\def\@chnuname{}
-\def\cchair#1{\def\@cchair{#1}}\def\@cchair{}
-\def\ddate#1{\def\@ddate{#1}}\def\@ddate{}
+\def\runningHeading#1{\def\@runningHeading{#1}}\def\@runningHeading{}
+\def\coverSecurityLevel#1{\def\@coverSecurityLevel{#1}}\def\@coverSecurityLevel{}
+\def\coverSerialNo#1{\def\@coverSerialNo{#1}}\def\@coverSerialNo{}
+\def\coverClassNo#1{\def\@coverClassNo{#1}}\def\@coverClassNo{}
+\def\coverUdc#1{\def\@coverUdc{#1}}\def\@coverUdc{}
+\def\practiceSupervisor#1{\def\@practiceSupervisor{#1}}\def\@practiceSupervisor{}
 
 % 英文内封
-\def\ename#1{\def\@ename{#1}}\def\@ename{}
-\def\cbe#1{\def\@cbe{#1}}\def\@cbe{}
-\def\cms#1{\def\@cms{#1}}\def\@cms{}
-\def\cdegree#1{\def\@cdegree{#1}}\def\@cdegree{}
-\def\cclass#1{\def\@cclass{#1}}\def\@cclass{}
-\def\emajor#1{\def\@emajor{#1}}\def\@emajor{}
-\def\ehnu#1{\def\@ehnu{#1}}\def\@ehnu{}
-\def\esupervisor#1{\def\@esupervisor{#1}}\def\@esupervisor{}
-\def\echair#1{\def\@echair{#1}}\def\@echair{}
-\def\edate#1{\def\@edate{#1}}\def\@edate{}
-\def\elevel#1{\def\@elevel{#1}}\def\@elevel{}
+\def\authorEn#1{\def\@authorEn{#1}}\def\@authorEn{}
+\def\supervisorEn#1{\def\@supervisorEn{#1}}\def\@supervisorEn{}
+\def\coverDateEn#1{\def\@coverDateEn{#1}}\def\@coverDateEn{}
+\def\supervisorTitleEn#1{\def\@supervisorTitleEn{#1}}\def\@supervisorTitleEn{}
 
 % 封面版式用到的长度
 \newlength{\@title@width}
@@ -568,7 +486,7 @@
 % --- 封面排版 ---
 \def\makecover{%
   \phantomsection
-  \pdfbookmark[-1]{\@ctitle}{ctitle}
+  \pdfbookmark[-1]{\@titleZh}{ctitle}
 
   \begin{titlepage}
     \begin{center}
@@ -578,14 +496,15 @@
         \begin{spacing}{2.1}
           \begin{tabular}{@{}p{2.2cm}c@{\hspace{.5cm}}clc}
 
-            \sihao\fs{~~分~类~号}&\underline{\makebox[\@title@width][c]{\@chnunumer}}&\qquad
+            \sihao\fs{~~分~类~号}&\underline{\makebox[\@title@width][c]{\@coverClassNo}}&\qquad
             \qquad \qquad \qquad \qquad \qquad \qquad &
-            \sihao\fs{密~级}&  \underline{\makebox[\@title@width][c]{\@cnumber}}\\
+            \sihao\fs{密~级}&
+            \underline{\makebox[\@title@width][c]{\@coverSecurityLevel}}\\
             \sihao\fs{~~U~~D~~C}&
-            \underline{\makebox[\@title@width][c]{\@cclassnumber}}&\qquad
+            \underline{\makebox[\@title@width][c]{\@coverUdc}}&\qquad
             \qquad \qquad \qquad \qquad \qquad \qquad &
             \sihao\fs{编~号}&
-            \underline{\makebox[\@title@width][c]{\sihao\fs\@csecret}} \\
+            \underline{\makebox[\@title@width][c]{\sihao\fs\@coverSerialNo}} \\
           \end{tabular}
         \end{spacing}
       }
@@ -599,17 +518,17 @@
 
       % 硕士学位论文
       \vspace*{0.3cm}
-      {\song\erhao\@cheadinga}\\
+      {\song\erhao\@coverHeadingOne}\\
       \vspace{0.4\baselineskip}
 
-      {\song\sanhao\@cheadingb}
+      {\song\sanhao\@coverHeadingTwo}
 
       \vspace*{1cm}
 
       % 论文标题
       \begin{center}
         \begin{spacing}{1.5}
-          \kai \yihao \@ctitle
+          \kai \yihao \@titleZh
         \end{spacing}
       \end{center}
 
@@ -622,20 +541,22 @@
         % 毕业生信息等
         \begin{spacing}{2.0}
           \sihao\song {研~~~~究~~~~生~~~~姓~~~~名：}
-          \sihao\song\underline{\makebox[\@title@width][c]{\@cauthor}} \\
+          \sihao\song\underline{\makebox[\@title@width][c]{\@authorZh}} \\
           \sihao\song{指导教师姓名、职称：}
-          \sihao\song\underline{\makebox[\@title@width][c]{\@csupervisor}} \\
+          \sihao\song\underline{\makebox[\@title@width][c]{\@supervisorZh}} \\
           \sihao\song{实践指导教师姓名、职称：}
-          \sihao\song\underline{\makebox[\@titlea@width][l]{\quad~\@cchair}} \\
+          \sihao\song\underline{\makebox[\@titlea@width][l]{\quad~\@practiceSupervisor}}
+          \\
           \sihao\song {专~~~业~~~学~~~位~~~类~~~别：}
-          \sihao\song\underline{\makebox[\@titleb@width][c]{\@csubjecttitle}} \\
+          \sihao\song\underline{\makebox[\@titleb@width][c]{\@degreeCategory}}
+          \\
           \sihao\song {专~~~业~~~学~~~位~~~领~~~域：}
-          \sihao\song\underline{\makebox[\@titleb@width][c]{\@caffil}} \\
+          \sihao\song\underline{\makebox[\@titleb@width][c]{\@degreeField}} \\
           \sihao\song{专~~~~~~~项~~~~~~~计~~~~~~~划：}
-          \sihao\song\underline{\makebox[\@titlec@width][l]{\qquad\@cmajor}}\\
+          \sihao\song\underline{\makebox[\@titlec@width][l]{\qquad\@coverSpecialPlan}}\\
           \vspace{2.0\baselineskip}
 
-          \sanhao\hei{\makebox[\@title@width][l]{~~~~~~~~~~\@cdate}}
+          \sanhao\hei{\makebox[\@title@width][l]{~~~~~~~~~~\@coverDateZh}}
           \\%%%封面第一页的日期
 
         \end{spacing}
@@ -650,7 +571,7 @@
       \qquad\\
       \vspace*{2.1cm}
       \begin{spacing}{1.5}
-        \er\@etitle
+        \er\@titleEn
 
       \end{spacing}
 
@@ -663,12 +584,12 @@
         for the degree of\\
         Master of Electronic Information / Education\\
         by\\
-        \@ename \\
-        Supervisor: (Associate) Professor \@esupervisor\\
+        \@authorEn \\
+        Supervisor: (Associate) Professor \@supervisorEn\\
         Supervisor for Practice Guiding: Senior Engineer Wang Weimin
 
         \vspace*{3\baselineskip}
-        \sanhao\@edate
+        \sanhao\@coverDateEn
 
       \end{spacing}
     \end{center}
@@ -678,52 +599,52 @@
   % 西北师范大学学位论文原创性声明
   \clearpage
   \thispagestyle{empty}
-  \begin{center}\hei\xiaoer{\@gongjuren}
+  \begin{center}\hei\xiaoer{\@signerLine}
   \end{center}\par
   \vspace{2.8\baselineskip}
 
-  \begin{center}\hei\xiaoer{\@authorizationtitle}
+  \begin{center}\hei\xiaoer{\@declarationTitle}
   \end{center}\par
   \vspace{1.8\baselineskip}
 
   {
     \linespread{2.0}
-    \song\sihao{\@authorizationcontent}\par
+    \song\sihao{\@declarationBody}\par
   }
   \vspace{2.55\baselineskip}
   \begin{flushright}
     {
       \song\sihao
-      \@ownersigncap \makebox[3.5cm][s]{}\par
+      \@authorSignatureLabel \makebox[3.5cm][s]{}\par
       \vspace{0.6\baselineskip}
-      \@supervisorsigncap \makebox[3.5cm][s]{}\par
+      \@supervisorSignatureLabel \makebox[3.5cm][s]{}\par
       \vspace{0.6\baselineskip}
-      \@signdatecap\makebox[1.5cm][s]{}
+      \@signDateLabel\makebox[1.5cm][s]{}
     }
   \end{flushright}
 
   % 西北师范大学学位论文版权使用授权书
   \clearpage
   \thispagestyle{empty}
-  \begin{center}\hei\xiaoer{\@gongjuren}
+  \begin{center}\hei\xiaoer{\@signerLine}
   \end{center}\par
   \vspace{2.5\baselineskip}
 
-  \begin{center}\hei\xiaoer{\@banquanshiyongshouquan}
+  \begin{center}\hei\xiaoer{\@copyrightTitle}
   \end{center}\par
   \vspace{2\baselineskip}
   {
     \linespread{2.0}
-    \song\sihao{\@banquanshiyongshouquanzhengwena}\par
-    \song\sihao{\@banquanshiyongshouquanzhengwenb}\par
+    \song\sihao{\@copyrightBody}\par
+    \song\sihao{\@copyrightConfidential}\par
   }
   \vspace{2\baselineskip}
   \begin{flushright}
     {
       \song\sihao
-      \@ownersigncap \makebox[3.5cm][s]{}\par
+      \@authorSignatureLabel \makebox[3.5cm][s]{}\par
       \vspace{0.6\baselineskip}
-      \@signdatecap \makebox[1.4cm][s]{}
+      \@signDateLabel \makebox[1.4cm][s]{}
     }
   \end{flushright}
 }

@@ -153,7 +153,7 @@ mathtype）编写（不包括专有名词缩和其缩写），正文中公式出
 \subsection{定理、推论、命题等的说明}
 
 %定理
-\begin{TheoremJXD}\label{Theorem1-1}
+\begin{theorem}\label{Theorem1-1}
   {考虑一个二次李雅普诺夫函数$L\left( {Q\left( t \right)}
     \right)$且$\mathbb{E}\left\{ {L\left( {Q\left( 0 \right)} \right)}
     \right\} < \infty $ ，假设此处的变量$B > 0$且$\varepsilon  \ge 0$，那么则有：
@@ -175,12 +175,12 @@ mathtype）编写（不包括专有名词缩和其缩写），正文中公式出
         }
     \end{enumerate}
   }
-\end{TheoremJXD}
+\end{theorem}
 \vspace{0.5em}
-上述\TheoremJXDref{Theorem1-1}给出了李雅普诺夫漂移界的队列稳定性条件。这个李雅普诺夫漂移的边界决定了系统中队列的稳定性。所有希望有效地保持稳定队列的算法都应该设计一种机制来实现这一界限。这一事实使得李雅普诺夫优化的框架易于识别。几乎所有利用李雅普诺夫优化的算法都可以分为两部分：第一部分努力满足上述定理的条件，从而使得队列稳定，而第二部分旨在实现一些系统目标，如吞吐量，功耗等，但这两部分并不是完全分开的，他们是由下面将要介绍的一些控制变量连接起来的。
+上述\theoremRef{Theorem1-1}给出了李雅普诺夫漂移界的队列稳定性条件。这个李雅普诺夫漂移的边界决定了系统中队列的稳定性。所有希望有效地保持稳定队列的算法都应该设计一种机制来实现这一界限。这一事实使得李雅普诺夫优化的框架易于识别。几乎所有利用李雅普诺夫优化的算法都可以分为两部分：第一部分努力满足上述定理的条件，从而使得队列稳定，而第二部分旨在实现一些系统目标，如吞吐量，功耗等，但这两部分并不是完全分开的，他们是由下面将要介绍的一些控制变量连接起来的。
 
 %引理
-\begin{LemmaJXD}\label{Lemma1-1}
+\begin{lemma}\label{Lemma1-1}
   考虑一个二次李雅普诺夫函数$L\left( {Q\left( t \right)}
   \right)$且$\mathbb{E}\left\{ {L\left( {Q\left( 0 \right)} \right)}
   \right\} < \infty $ ，假设此处的变量$B > 0$且$\varepsilon  \ge 0$，那么则有：
@@ -188,12 +188,12 @@ mathtype）编写（不包括专有名词缩和其缩写），正文中公式出
     \Phi \left( {Q\left( t \right)} \right) \le B - \varepsilon
     \sum\limits_{n = 1}^{Ns} {\left| {{Q_n}\left( t \right)} \right|}.
   \end{equation}
-\end{LemmaJXD}
+\end{lemma}
 \vspace{0.5em}
-上述\LemmaJXDref{Lemma1-1}给出了李雅普诺夫漂移界的队列稳定性条件。
+上述\lemmaRef{Lemma1-1}给出了李雅普诺夫漂移界的队列稳定性条件。
 
 %推论
-\begin{CorollaryJXD}\label{Corollary1-1}
+\begin{corollary}\label{Corollary1-1}
   考虑一个二次李雅普诺夫函数$L\left( {Q\left( t \right)}
   \right)$且$\mathbb{E}\left\{ {L\left( {Q\left( 0 \right)} \right)}
   \right\} < \infty $ ，假设此处的变量$B > 0$且$\varepsilon  \ge 0$，那么则有：
@@ -201,12 +201,12 @@ mathtype）编写（不包括专有名词缩和其缩写），正文中公式出
     \Phi \left( {Q\left( t \right)} \right) \le B - \varepsilon
     \sum\limits_{n = 1}^{Ns} {\left| {{Q_n}\left( t \right)} \right|}.
   \end{equation}
-\end{CorollaryJXD}
+\end{corollary}
 \vspace{0.5em}
-上述\CorollaryJXDref{Corollary1-1}给出了李雅普诺夫漂移界的队列稳定性条件。
+上述\corollaryRef{Corollary1-1}给出了李雅普诺夫漂移界的队列稳定性条件。
 
 %定义
-\begin{DefinitionJXD}\label{Definition1-1}
+\begin{definition}\label{Definition1-1}
   考虑一个二次李雅普诺夫函数$L\left( {Q\left( t \right)}
   \right)$且$\mathbb{E}\left\{ {L\left( {Q\left( 0 \right)} \right)}
   \right\} < \infty $ ，假设此处的变量$B > 0$且$\varepsilon  \ge 0$，那么则有：
@@ -214,12 +214,12 @@ mathtype）编写（不包括专有名词缩和其缩写），正文中公式出
     \Phi \left( {Q\left( t \right)} \right) \le B - \varepsilon
     \sum\limits_{n = 1}^{Ns} {\left| {{Q_n}\left( t \right)} \right|}.
   \end{equation}
-\end{DefinitionJXD}
+\end{definition}
 \vspace{0.5em}
-上述\DefinitionJXDref{Definition1-1}给出了李雅普诺夫漂移界的队列稳定性条件。
+上述\definitionRef{Definition1-1}给出了李雅普诺夫漂移界的队列稳定性条件。
 
 %命题
-\begin{PropositionJXD}\label{Proposition1-1}
+\begin{proposition}\label{Proposition1-1}
   考虑一个二次李雅普诺夫函数$L\left( {Q\left( t \right)}
   \right)$且$\mathbb{E}\left\{ {L\left( {Q\left( 0 \right)} \right)}
   \right\} < \infty $ ，假设此处的变量$B > 0$且$\varepsilon  \ge 0$，那么则有：
@@ -227,9 +227,9 @@ mathtype）编写（不包括专有名词缩和其缩写），正文中公式出
     \Phi \left( {Q\left( t \right)} \right) \le B - \varepsilon
     \sum\limits_{n = 1}^{Ns} {\left| {{Q_n}\left( t \right)} \right|}.
   \end{equation}
-\end{PropositionJXD}
+\end{proposition}
 \vspace{0.5em}
-上述\PropositionJXDref{Proposition1-1}给出了李雅普诺夫漂移界的队列稳定性条件。
+上述\propositionRef{Proposition1-1}给出了李雅普诺夫漂移界的队列稳定性条件。
 
 \subsection{算法的描述}
 在该算法中，提取特征阶段 SAE 采用逐层训练的方式对数据进行降维，在 mini-batch
