@@ -6,9 +6,15 @@
 #  ctex + xeCJK, so the old latex+dvipdfmx / pdflatex routes
 #  are no longer needed.)
 #
-# 所有编译中间文件输出到 build/ 目录；最终 main.pdf 复制回项目根目录。
-# \include 的子目录（body/、appendix/）需要在 build/ 下预建对应子目录，
-# 因此构建前会执行 mkdir -p。
+# All intermediate files go to build/; the final main.pdf is copied
+# back to the project root.  \include subdirs (body/, appendix/)
+# need matching build/ subdirs, created before compiling.
+#
+# Prints friendly progress + warnings/errors; the full logs are kept
+# in build/pass1.log, pass2.log, pass3.log, bib.log and main.log.
+# NOTE: this file is ASCII-only for cross-platform safety (Windows
+#       Git Bash + Unix alike).  The Windows build.ps1 has the full
+#       Chinese/emoji output.
 #
 # Requires: GNU make + a TeX distribution with xelatex/bibtex on PATH.
 #
@@ -39,24 +45,29 @@ SOURCES := $(MAIN).tex \
 
 all: $(MAIN).pdf
 
-# 根目录 main.pdf 由 build/main.pdf 复制而来
-$(MAIN).pdf: $(BUILD)/$(MAIN).pdf
-	cp $(BUILD)/$(MAIN).pdf $(MAIN).pdf
-
-# 真正的编译目标：全部输出到 build/
+# 编译（四步），全部输出到 build/，打印进度 + 警告/错误
 $(BUILD)/$(MAIN).pdf: $(SOURCES)
 	@mkdir -p $(BUILD_SUBDIRS)
-	$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN)
-	$(BIB)     $(BUILD)/$(MAIN)
-	$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN)
-	$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN)
-	@echo "Built: $(BUILD)/$(MAIN).pdf"
+	@echo "[1/4] xelatex (pass 1) ..."
+	@$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass1.log 2>&1 || { echo "[!!] xelatex (pass 1) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass1.log | tail -n 30; exit 1; }
+	@echo "[2/4] bibtex ..."
+	@$(BIB) $(BUILD)/$(MAIN) >$(BUILD)/bib.log 2>&1 || { echo "[!!] bibtex FAILED:"; grep -E 'Warning|^!' $(BUILD)/bib.log | tail -n 30; exit 1; }
+	@echo "[3/4] xelatex (pass 2) ..."
+	@$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass2.log 2>&1 || { echo "[!!] xelatex (pass 2) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass2.log | tail -n 30; exit 1; }
+	@echo "[4/4] xelatex (pass 3) ..."
+	@$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass3.log 2>&1 || { echo "[!!] xelatex (pass 3) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass3.log | tail -n 30; exit 1; }
+	@grep -E 'Warning' $(BUILD)/pass3.log | sed 's/^/[!] /' || true
+
+# 根目录 main.pdf 由 build/main.pdf 复制而来
+$(MAIN).pdf: $(BUILD)/$(MAIN).pdf
+	@cp $(BUILD)/$(MAIN).pdf $(MAIN).pdf
+	@echo "[OK] Built: $(MAIN).pdf ($$(grep -o '[0-9]* pages' $(BUILD)/main.log | tail -1 | sed 's/ pages//') pages)"
 
 # 清理中间文件（build/ 目录），保留最终 PDF
 clean:
-	rm -rf $(BUILD)
-	@echo "Cleaned intermediate files (build/)."
+	@rm -rf $(BUILD)
+	@echo "[OK] Cleaned intermediate files (build/)."
 
 cleanall: clean
-	rm -f $(MAIN).pdf
-	@echo "Also removed the built PDF."
+	@rm -f $(MAIN).pdf
+	@echo "[OK] Also removed $(MAIN).pdf."
