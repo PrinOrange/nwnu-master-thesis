@@ -25,6 +25,7 @@
 ├── figures/            # 插图资源
 ├── references.bib      # 参考文献数据库
 ├── NWNUThesis.bst      # 参考文献样式（BibTeX）
+├── build/              # 构建编译过程中间文件
 ├── Makefile            # Linux / macOS 编译脚本
 ├── pdfmake.bat         # Windows 编译脚本
 └── clean.bat           # Windows 清理脚本

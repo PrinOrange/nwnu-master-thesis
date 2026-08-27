@@ -6,8 +6,11 @@
 #  ctex + xeCJK, so the old latex+dvipdfmx / pdflatex routes
 #  are no longer needed.)
 #
+# 所有编译中间文件输出到 build/ 目录；最终 main.pdf 复制回项目根目录。
+# \include 的子目录（body/、appendix/）需要在 build/ 下预建对应子目录，
+# 因此构建前会执行 mkdir -p。
+#
 # Requires: GNU make + a TeX distribution with xelatex/bibtex on PATH.
-# Under Git Bash, `make clean` uses find -delete.
 #
 # Targets:
 #   make           build with xelatex
@@ -18,6 +21,10 @@
 MAIN    := main
 BIB     := bibtex
 XELATEX := xelatex
+BUILD   := build
+
+# \include 路径对应的 build 子目录
+BUILD_SUBDIRS := $(BUILD)/body $(BUILD)/appendix
 
 # Files that should trigger a rebuild when changed
 SOURCES := $(MAIN).tex \
@@ -32,29 +39,23 @@ SOURCES := $(MAIN).tex \
 
 all: $(MAIN).pdf
 
-$(MAIN).pdf: $(SOURCES)
-	$(XELATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
-	$(BIB)     $(MAIN)
-	$(XELATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
-	$(XELATEX) -synctex=1 -interaction=nonstopmode -halt-on-error $(MAIN)
-	@echo "Built: $(MAIN).pdf"
+# 根目录 main.pdf 由 build/main.pdf 复制而来
+$(MAIN).pdf: $(BUILD)/$(MAIN).pdf
+	cp $(BUILD)/$(MAIN).pdf $(MAIN).pdf
 
-# --- cleanup (same list as clean.bat) ---
+# 真正的编译目标：全部输出到 build/
+$(BUILD)/$(MAIN).pdf: $(SOURCES)
+	@mkdir -p $(BUILD_SUBDIRS)
+	$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN)
+	$(BIB)     $(BUILD)/$(MAIN)
+	$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN)
+	$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN)
+	@echo "Built: $(BUILD)/$(MAIN).pdf"
+
+# 清理中间文件（build/ 目录），保留最终 PDF
 clean:
-	@find . -type f \( \
-	    -name '*.aux' -o -name '*.bbl' -o -name '*.blg' -o -name '*.bcf' -o \
-	    -name '*.run.xml' -o -name '*.cpx' -o -name '*.log' -o -name '*.out' -o \
-	    -name '*.toc' -o -name '*.toe' -o -name '*.thm' -o -name '*.lof' -o \
-	    -name '*.lot' -o -name '*.loa' -o -name '*.fen' -o -name '*.ten' -o \
-	    -name '*.fls' -o -name '*.fdb_latexmk' -o -name '*.synctex' -o \
-	    -name '*.synctex.gz' -o -name '*.dvi' -o -name '*.xdv' -o -name '*.ps' -o \
-	    -name '*.gz' -o -name '*.gz(busy)' -o -name '*.idx' -o -name '*.ind' -o \
-	    -name '*.ilg' -o -name '*.nlo' -o -name '*.nls' -o -name '*.glo' -o \
-	    -name '*.gls' -o -name '*.acn' -o -name '*.acr' -o -name '*.alg' -o \
-	    -name '*.ist' -o -name '*.nav' -o -name '*.snm' -o -name '*.vrb' -o \
-	    -name '*.brf' -o -name '*.lol' -o -name '*.bak' -o -name '*.swp' \
-	\) -delete
-	@echo "Cleaned intermediate files."
+	rm -rf $(BUILD)
+	@echo "Cleaned intermediate files (build/)."
 
 cleanall: clean
 	rm -f $(MAIN).pdf
