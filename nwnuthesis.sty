@@ -364,16 +364,27 @@
 
 \makeatletter
 \renewcommand{\p@subfigure}{\thefigure~} % 子图引用为 7.1 a)，母图与子图之间加空格
+\def\@nwnu@algorithmname{algorithm}   % 算法浮动体的类型名（用于题注特判）
 \long\def\@makecaption#1#2{%
   \vskip\abovecaptionskip
-  \sbox\@tempboxa{\centering\wuhao{#1~~#2} }%
-  \ifdim \wd\@tempboxa >\hsize
-  \centering\wuhao{#1~~#2} \par
+  \edef\@nwnu@captype{\@captype}%
+  \ifx\@nwnu@captype\@nwnu@algorithmname
+    % 算法题注：左对齐，标签（"算法 1.1"）加粗，题注与算法体之间加横线
+    \wuhao\raggedright\textbf{#1}~#2\par
+    \vspace{0.3em}
+    \hrule
+    \vspace{0.3em}
   \else
-  \global \@minipagefalse
-  \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+    % 图、表题注：居中
+    \sbox\@tempboxa{\centering\wuhao{#1~~#2} }%
+    \ifdim \wd\@tempboxa >\hsize
+      \centering\wuhao{#1~~#2} \par
+    \else
+      \global \@minipagefalse
+      \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+    \fi
   \fi
-\vskip\belowcaptionskip}
+  \vskip\belowcaptionskip}
 \makeatother
 
 \captionsetup[figure]{skip=8pt}
