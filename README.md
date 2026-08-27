@@ -27,8 +27,7 @@
 ├── NWNUThesis.bst      # 参考文献样式（BibTeX）
 ├── build/              # 构建编译过程中间文件
 ├── Makefile            # Linux / macOS 编译脚本
-├── pdfmake.bat         # Windows 编译脚本
-└── clean.bat           # Windows 清理脚本
+└── build.ps1           # Windows 编译 / 清理脚本（build / clean / cleanall）
 ```
 
 ## 快速开始
@@ -40,14 +39,15 @@
 
 ### 编译
 
-**Windows**（cmd 或 Git Bash）：
+**Windows**（PowerShell）：
 
-```bash
-pdfmake.bat   # 编译文档
-clean.bat     # 清理中间文件（保留 PDF）
+```powershell
+.\build.ps1          # 编译文档（默认行为）
+.\build.ps1 clean    # 清理中间文件（保留 PDF）
+.\build.ps1 cleanall # 清理中间文件并删除 PDF
 ```
 
-**Linux / macOS**：
+**Linux / macOS** 或其他类 Unix 系统：
 
 ```bash
 make          # 编译文档
