@@ -23,8 +23,10 @@
 %  1. 宏包加载
 %---------------------------------------------------------------------------%
 
-% 中文字体支持（必须在 \setCJKfamilyfont 之前加载）
-\RequirePackage{ctex}
+% 中文字体支持（必须在 \setCJKfamilyfont 之前加载）。
+% fontset=none：不启用 ctex 自带的字体配置，字体全部由本文件统一定义，
+% 避免重定义 ctex 默认字族时的 xeCJK 警告。
+\RequirePackage[fontset=none]{ctex}
 
 % 西文字体：fontspec 必须在 newtxmath 之前加载；不要加载 newtxtext，
 % 它和 fontspec 冲突会导致 SimSun 等中文字体解析失败。
@@ -44,12 +46,18 @@
 \setCJKfamilyfont{fs}[Path=./assets/]{simfang.ttf}
 \setCJKfamilyfont{li}[Path=./assets/]{simli.ttf}
 
-% ctex 自带命令（\songti/\heiti/\kaishu/\fangsong/\lishu）也使用 assets 字体
-\setCJKfamilyfont{zhsong}[Path=./assets/]{simsun.ttc}
-\setCJKfamilyfont{zhhei}[Path=./assets/]{simhei.ttf}
-\setCJKfamilyfont{zhkai}[Path=./assets/]{simkai.ttf}
-\setCJKfamilyfont{zhfs}[Path=./assets/]{simfang.ttf}
-\setCJKfamilyfont{zhli}[Path=./assets/]{simli.ttf}
+% ctex 常用字体命令（fontset=none 下需自行定义），指向上面的 assets 字体族
+\def\songti{\CJKfamily{song}}
+\def\heiti{\CJKfamily{hei}}
+\def\kaishu{\CJKfamily{kai}}
+\def\fangsong{\CJKfamily{fs}}
+\def\lishu{\CJKfamily{li}}
+
+% 默认 CJK 字族：fontset=none 下 xeCJK 未指定默认族，这里统一设为宋体
+% （\CJKrmdefault=正文、\CJKsfdefault=sans、\CJKttdefault=等宽，模板基本不用后两者）
+\def\CJKrmdefault{song}
+\def\CJKsfdefault{song}
+\def\CJKttdefault{song}
 
 % 页面几何
 \RequirePackage{geometry}
