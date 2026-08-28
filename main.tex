@@ -10,7 +10,6 @@
 %        nwnuthesis.sty，本文件只负责文档结构与内容装配。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \def\usewhat{xelatex}                               % 编译方式 xelatex
-% 项目已整体迁移到 XeLaTeX，编译链：xelatex → bibtex → xelatex → xelatex
 
 \documentclass[a4paper,12pt,openany,twoside]{book}
 
@@ -45,6 +44,7 @@
   \include{body/chapter04}
   \include{body/chapter05}
   \include{body/chapter06}
+  % 若需要增删章节，别忘了在上面导入。
 
   %------------------- 参考文献 -------------------%
   \defaultfont

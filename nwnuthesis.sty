@@ -36,7 +36,7 @@
 \setmainfont[Path=./assets/,
   BoldFont=timesbd.ttf,
   ItalicFont=timesi.ttf,
-  BoldItalicFont=timesbi.ttf]{times.ttf}
+BoldItalicFont=timesbi.ttf]{times.ttf}
 
 % 将自定义 CJK 字体族（\song/\hei/\kai/\fs/\li 即 \CJKfamily{...}）
 % 映射到 assets/ 目录下的字体文件
@@ -389,22 +389,22 @@
   \vskip\abovecaptionskip
   \edef\@nwnu@captype{\@captype}%
   \ifx\@nwnu@captype\@nwnu@algorithmname
-    % 算法题注：左对齐，标签（"算法 1.1"）加粗，题注与算法体之间加横线
-    \wuhao\raggedright\textbf{#1}~#2\par
-    \vspace{0.3em}
-    \hrule
-    \vspace{0.3em}
+  % 算法题注：左对齐，标签（"算法 1.1"）加粗，题注与算法体之间加横线
+  \wuhao\raggedright\textbf{#1}~#2\par
+  \vspace{0.3em}
+  \hrule
+  \vspace{0.3em}
   \else
-    % 图、表题注：居中
-    \sbox\@tempboxa{\centering\wuhao{#1~~#2} }%
-    \ifdim \wd\@tempboxa >\hsize
-      \centering\wuhao{#1~~#2} \par
-    \else
-      \global \@minipagefalse
-      \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
-    \fi
+  % 图、表题注：居中
+  \sbox\@tempboxa{\centering\wuhao{#1~~#2} }%
+  \ifdim \wd\@tempboxa >\hsize
+  \centering\wuhao{#1~~#2} \par
+  \else
+  \global \@minipagefalse
+  \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
   \fi
-  \vskip\belowcaptionskip}
+  \fi
+\vskip\belowcaptionskip}
 \makeatother
 
 \captionsetup[figure]{skip=8pt}
