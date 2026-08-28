@@ -23,6 +23,7 @@
 ├── body/               # 正文各章（chapter01 ~ chapter06）
 ├── appendix/           # 附录、致谢、攻读学位期间成果
 ├── figures/            # 插图资源
+├── assets/             # 论文字体、LOGO 等设计资源
 ├── references.bib      # 参考文献数据库
 ├── NWNUThesis.bst      # 参考文献样式（BibTeX）
 ├── build/              # 构建编译过程中间文件
@@ -65,4 +66,4 @@ make cleanall # 清理中间文件并删除 PDF
 
 ## 开源许可
 
-本项目使用 CC 4.0 协议开源。
+本项目使用 CC 4.0 协议开源。不包括在 `./assets` 目录下的字体、LOGO 等设计资源，其使用协议另有规定。

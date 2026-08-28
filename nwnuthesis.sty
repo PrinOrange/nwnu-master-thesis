@@ -29,15 +29,27 @@
 % 西文字体：fontspec 必须在 newtxmath 之前加载；不要加载 newtxtext，
 % 它和 fontspec 冲突会导致 SimSun 等中文字体解析失败。
 \RequirePackage{fontspec}
-\setmainfont{Times New Roman}
+% 字体从 assets/ 目录加载（随模板分发的字体副本，避免依赖系统已安装字体）。
+% 注意：这些字体为商业字体，仅限个人/私域使用，请勿公开分发。
+\setmainfont[Path=./assets/,
+  BoldFont=timesbd.ttf,
+  ItalicFont=timesi.ttf,
+  BoldItalicFont=timesbi.ttf]{times.ttf}
 
 % 将自定义 CJK 字体族（\song/\hei/\kai/\fs/\li 即 \CJKfamily{...}）
-% 映射到 Windows 系统字体
-\setCJKfamilyfont{song}{SimSun}
-\setCJKfamilyfont{hei}{SimHei}
-\setCJKfamilyfont{kai}{KaiTi}
-\setCJKfamilyfont{fs}{FangSong}
-\setCJKfamilyfont{li}{LiSu}
+% 映射到 assets/ 目录下的字体文件
+\setCJKfamilyfont{song}[Path=./assets/]{simsun.ttc}
+\setCJKfamilyfont{hei}[Path=./assets/]{simhei.ttf}
+\setCJKfamilyfont{kai}[Path=./assets/]{simkai.ttf}
+\setCJKfamilyfont{fs}[Path=./assets/]{simfang.ttf}
+\setCJKfamilyfont{li}[Path=./assets/]{simli.ttf}
+
+% ctex 自带命令（\songti/\heiti/\kaishu/\fangsong/\lishu）也使用 assets 字体
+\setCJKfamilyfont{zhsong}[Path=./assets/]{simsun.ttc}
+\setCJKfamilyfont{zhhei}[Path=./assets/]{simhei.ttf}
+\setCJKfamilyfont{zhkai}[Path=./assets/]{simkai.ttf}
+\setCJKfamilyfont{zhfs}[Path=./assets/]{simfang.ttf}
+\setCJKfamilyfont{zhli}[Path=./assets/]{simli.ttf}
 
 % 页面几何
 \RequirePackage{geometry}
