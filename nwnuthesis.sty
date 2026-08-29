@@ -244,6 +244,18 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
   {
 \end{list}}
 
+% 出版物/成果分节板块：\begin{publistsec}{标题} ... \item ... \end{publistsec}
+% 封装「黑体四号小标题 + 0.3em 空隙 + publist 列表 + 1em 尾部空隙」。
+% 标题用 \heiti\sihao 编号块样式（如 "1. 个人简历"），\item 条目照常写在环境内。
+\newenvironment{publistsec}[1]{%
+  {\heiti\sihao #1}%
+  \vspace*{0.3em}%
+  \begin{publist}%
+  }{
+  \end{publist}%
+  \vspace*{1em}%
+}
+
 %---------------------------------------------------------------------------%
 %  5. 目录（Contents）
 %---------------------------------------------------------------------------%
@@ -325,6 +337,13 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
   \@afterheading
 \fi}
 
+% titlesec 接管 \chapter* 后，其内部用 \ttl@mkchap@i 的 \ifcase 会
+% \global\@afterindentfalse，导致无编号章之后的首段顶格。这里在标题排版
+% 完成后重新置为 \@afterindenttrue，让紧跟的首段正常缩进两格。
+\let\nwnu@makeschapterhead\@makeschapterhead
+\def\@makeschapterhead#1{%
+  \nwnu@makeschapterhead{#1}%
+\global\@afterindenttrue}
 \def\@schapter#1{\if@twocolumn
   \@topnewpage[\@makeschapterhead{#1}]%
   \else
