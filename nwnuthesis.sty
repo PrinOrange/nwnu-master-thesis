@@ -13,8 +13,19 @@
 %    \usepackage{nwnuthesis}
 %
 %  编译方式：pdfLaTeX 或 XeLaTeX（自动检测引擎）
-%    - pdfLaTeX：ctex(fontset=windows) + CJK 宏包，调用系统已安装的 Windows 中文字体
-%    - XeLaTeX：ctex/xeCJK，字体从 assets/ 目录加载
+%    - pdfLaTeX：ctex(fontset=windows) + CJK 宏包，调用系统已安装的 Windows
+%      中文字体（SimSun / SimHei / KaiTi / FangSong / LiSu）；
+%    - XeLaTeX：ctex/xeCJK，字体从 assets/ 目录加载（随模板分发的字体副本）。
+%
+%  文件结构：
+%    1. 宏包加载            7. 页眉页脚（fancyhdr 页面样式）
+%    2. 字体与字号命令      8. 图表与公式编号、题注
+%    3. 页面布局            9. 定理配置与算法
+%    4. 列表环境           10. 参考文献
+%    5. 目录              11. 封面、摘要、版权、致谢
+%    6. 章节格式          12. cleveref 交叉引用配置
+%
+%  注意：宏包加载顺序不能随意改动，见各段注释中的「需早于/晚于」说明。
 %===========================================================================%
 
 \NeedsTeXFormat{LaTeX2e}
@@ -28,11 +39,8 @@
 % 编译引擎检测（pdfLaTeX / XeLaTeX 使用不同的中文字体方案）。
 \RequirePackage{iftex}
 
-% 中文字体支持。
-%   - pdfLaTeX：ctex 的 fontset=windows 走 CJK 宏包，直接调用系统已安装的
-%     Windows 中文字体（SimSun / SimHei / KaiTi / FangSong / LiSu）；
-%   - XeLaTeX：fontset=none，字体全部由本文件通过 fontspec/xeCJK 从
-%     assets/ 目录加载（随模板分发的字体副本）。
+% 中文字体支持：pdfLaTeX 走 ctex 的 windows fontset（系统字体），
+% XeLaTeX 用 fontset=none + 本文件从 assets/ 加载字体副本。
 \ifpdftex
 \RequirePackage[UTF8,fontset=windows]{ctex}
 
@@ -50,10 +58,9 @@
 \setmainfont[Path=./assets/,
   BoldFont=timesbd.ttf,
   ItalicFont=timesi.ttf,
-BoldItalicFont=timesbi.ttf]{times.ttf}
+  BoldItalicFont=timesbi.ttf]{times.ttf}
 
-% 将自定义 CJK 字体族（\song/\hei/\kai/\fs/\li 即 \CJKfamily{...}）
-% 映射到 assets/ 目录下的字体文件
+% 将自定义 CJK 字体族映射到 assets/ 目录下的字体文件
 \setCJKfamilyfont{song}[Path=./assets/]{simsun.ttc}
 \setCJKfamilyfont{hei}[Path=./assets/]{simhei.ttf}
 \setCJKfamilyfont{kai}[Path=./assets/]{simkai.ttf}
@@ -130,7 +137,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 % 代码块编号的交叉引用与书签。
 \RequirePackage{listings}
 
-% hyperref（最后加载，避免与其它宏包冲突）
+% hyperref（最后加载的宏包，避免与其它宏包冲突）
 \RequirePackage[unicode,
   hypertexnames=false,% 封面/摘要前页与正文页码重号，锚点名取自页码会重复；改用顺序编号规避
   pdfstartview=FitH,
@@ -146,15 +153,14 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 ]{hyperref}
 
 % cleveref：\cref{...} 自动补充「图 / 表 / 式 / 算法 / 代码 / 第…章」等前缀。
-% 必须晚于 hyperref 加载；具体前缀名与格式见文末「13. cleveref 交叉引用配置」。
+% 必须晚于 hyperref 加载；具体前缀名与格式见「12. cleveref 交叉引用配置」。
 \RequirePackage{cleveref}
 
 % 算法题注字体
 \DeclareCaptionFont{myfont}{\fontsize{10.5pt}{10.5pt}\selectfont}
 \captionsetup[algorithm]{font=myfont}
 
-% 公式编号与编号标签格式（中文全角括号）
-\renewcommand{\theequation}{\arabic{chapter}-\arabic{equation}}
+% 公式编号标签格式（中文全角括号）。编号格式见第 8 节。
 \makeatletter
 \def\tagform@#1{\maketag@@@{（\ignorespaces#1\unskip）}}
 \makeatother
@@ -286,11 +292,12 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \setcounter{lofdepth}{1}
 \renewcommand{\listtablename}{表格索引}
 
-% 图表清单中条目编号的前缀标签
+% 图表清单中条目编号的前缀标签。
+% 注意：\numberline 是「图/表清单」共用的命令，两条 \renewcommand 会相互覆盖，
+% 仅最后一条（表）生效（此行为为模板原样保留，故图清单条目也会带「表」前缀）；
+% 本模板正文未调用 \listoffigures / \listoftables，故不影响输出。
 \newcommand{\loflabel}{图~}
 \newcommand{\lotlabel}{表~}
-
-% 图表清单条目编号格式（保留原行为：后一个定义覆盖前一个）
 \renewcommand{\numberline}[1]{\song\xiaosi\loflabel~#1\hspace*{\baselineskip}}
 \renewcommand{\numberline}[1]{\song\xiaosi\lotlabel~#1\hspace*{\baselineskip}}
 
@@ -442,6 +449,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \renewcommand{\tablename}{\bfseries 表}   % 插表题头
 \renewcommand{\figurename}{\bfseries 图}  % 插图题头
 
+% 编号统一用「章-序号」（如图 1-1、表 3-2、式（4-1）、算法 4-1）
 \renewcommand{\thefigure}{\arabic{chapter}-\arabic{figure}}
 \renewcommand{\thetable}{\arabic{chapter}-\arabic{table}}
 \renewcommand{\theequation}{\arabic{chapter}-\arabic{equation}}
@@ -486,6 +494,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
   escapeinside={(*@}{@*)},
 }
 
+% 题注排版：复用本文件的 \@makecaption，按浮动体类型区分处理
 \makeatletter
 \renewcommand{\p@subfigure}{\thefigure~} % 子图引用为 7.1 a)，母图与子图之间加空格
 \def\@nwnu@algorithmname{algorithm}   % 算法浮动体的类型名（用于题注特判）
@@ -515,8 +524,8 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \captiondelim{~~~~}               % longtable 表头分隔符
 
 % 正文排印细节
-% 浮动体（图/表/算法/代码等）与上下正文的间距：至少约半倍正文行高（正文 12pt、行高约 20pt，半倍约 10pt）。
-% 原 intextsep=2pt 太挤，现放宽，使浮动体上下留出呼吸空间。
+% 浮动体（图/表/算法/代码等）与上下正文的间距：至少约半倍正文行高（正文 12pt、
+% 行高约 20pt，半倍约 10pt）。原 intextsep=2pt 太挤，现放宽，使浮动体上下留出呼吸空间。
 \renewcommand\arraystretch{1.5}
 \setlength{\intextsep}{12pt}        % 文中浮动体与上下正文间距
 \setlength{\floatsep}{10pt}         % 相邻浮动体间距
@@ -548,7 +557,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 % 用法：在 \STATE \textbf{输出：}... 之后插入 \alginputrule。
 \newcommand{\alginputrule}{\vspace{0.3em}\hrule\vspace{0.3em}}
 
-% --- JXD 系列：定理/引理/推论/定义/命题（正文中使用的自定义环境） ---
+% --- 定理/引理/推论/定义/命题（正文中使用的自定义环境） ---
 \newcounter{theorem}[chapter]
 \newenvironment{theorem}{\refstepcounter{theorem}\vspace{5pt}\indent
 \kaishu{\bfseries 定理\arabic{chapter}-\arabic{theorem}:}~}{\kaishu\vspace{-10pt}}
@@ -616,7 +625,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \bibpunct{[}{]}{,}{n}{}{,}
 
 %---------------------------------------------------------------------------%
-%  12. 封面、摘要、版权、致谢格式定义
+%  11. 封面、摘要、版权、致谢格式定义
 %---------------------------------------------------------------------------%
 \makeatletter
 
@@ -888,7 +897,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \makeatother
 
 %---------------------------------------------------------------------------%
-%  13. cleveref 交叉引用前缀配置
+%  12. cleveref 交叉引用配置
 %---------------------------------------------------------------------------%
 % \cref{label} 自动输出「前缀 + 编号」，如：
 %   图 1-1 / 表 1-1 / 式（1-1）/ 算法 1-1 / 代码 1-1 / 第 1 章 / 第 1.1 节 / 定理 1-1
