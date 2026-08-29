@@ -6,8 +6,8 @@
 
 ## 环境要求
 
-- [TeX Live](https://www.tug.org/texlive/)（或其它支持 XeLaTeX 的发行版）
-- 中文字体：Windows 自带 SimSun / SimHei / KaiTi / FangSong / LiSu。在非 Windows 系统上，需自行安装对应字体，或在 `nwnuthesis.sty` 中调整 `\setCJKfamilyfont` 的字体映射
+- [TeX Live](https://www.tug.org/texlive/)（或其它支持 pdfLaTeX 的发行版）
+- 中文字体：**pdfLaTeX 编译时直接调用系统已安装的 Windows 中文字体**（SimSun / SimHei / KaiTi / FangSong / LiSu），请确保这些字体已安装（Windows 自带）。XeLaTeX 编译时则从 `assets/` 目录加载随模板分发的字体副本，不依赖系统字体。
 - 推荐 [tex-fmt](https://github.com/wgunderwood/tex-fmt) ，一款格式化 CLI 工具，可以对 LaTeX 项目进行格式化
 
 ## 目录结构
@@ -40,6 +40,8 @@
 
 ### 编译
 
+> 默认使用 **pdfLaTeX** 编译。`nwnuthesis.sty` 会自动检测编译引擎：pdfLaTeX 下走 ctex(CJK 宏包) + 系统中文字体，XeLaTeX 下走 ctex(xeCJK) + `assets/` 字体，因此两种引擎均可编译，仅需切换 `main.tex` 顶部的 `% !TeX program` 声明。
+
 **Windows**（PowerShell）：
 
 ```powershell
@@ -59,7 +61,7 @@ make cleanall # 清理中间文件并删除 PDF
 ## 注意事项
 
 1. 如何迁移到 Overleaf 上使用？
-> 本项目可以直接迁移到 Overleaf 上使用，将本仓库以 ZIP 下载再上传到 Overleaf 即可。在使用时，请将 Compiler 切换到 XeLaTeX，版本可选 2020-2026 即可。  \
+> 本项目可以直接迁移到 Overleaf 上使用，将本仓库以 ZIP 下载再上传到 Overleaf 即可。在使用时，请将 Compiler 切换到 **XeLaTeX**（Overleaf 的 Linux 环境没有安装 Windows 中文字体，pdfLaTeX 的 `fontset=windows` 无法使用；而 XeLaTeX 会从 `assets/` 加载随模板分发的字体，可正常编译）。  \
 > 然而，**对于学位论文，通常页数较多，CJK 字符渲染较为复杂，可能会超过 Overleaf 的免费限制。** 推荐使用本地编译。
 
 2. 如何增删章节

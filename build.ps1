@@ -7,7 +7,7 @@
 #    .\build.ps1 clean      # remove intermediate files in build/, keep main.pdf
 #    .\build.ps1 cleanall   # remove build/ and the built main.pdf
 #
-#  Compile chain: xelatex -> bibtex -> xelatex -> xelatex
+#  Compile chain: pdflatex -> bibtex -> pdflatex -> pdflatex
 #  All intermediate files go to build/; the final main.pdf is copied back
 #  to the project root.
 #
@@ -45,21 +45,21 @@ function Invoke-Compile {
         New-Item -ItemType Directory -Force -Path $d | Out-Null
     }
 
-    Write-Host "🔨 [1/4] xelatex 第一遍编译…"
-    & xelatex "-synctex=1" "-output-directory=$BuildDir" "-interaction=nonstopmode" "-halt-on-error" $Main *> "$BuildDir/pass1.log"
-    if ($LASTEXITCODE -ne 0) { Write-Host "❌ xelatex 第一遍失败，错误信息："; Show-Issues "$BuildDir/pass1.log"; throw "xelatex (pass 1) failed" }
+    Write-Host "🔨 [1/4] pdflatex 第一遍编译…"
+    & pdflatex "-synctex=1" "-output-directory=$BuildDir" "-interaction=nonstopmode" "-halt-on-error" $Main *> "$BuildDir/pass1.log"
+    if ($LASTEXITCODE -ne 0) { Write-Host "❌ pdflatex 第一遍失败，错误信息："; Show-Issues "$BuildDir/pass1.log"; throw "pdflatex (pass 1) failed" }
 
     Write-Host "📚 [2/4] bibtex 生成参考文献…"
     & bibtex "$BuildDir/$Main" *> "$BuildDir/bib.log"
     if ($LASTEXITCODE -ne 0) { Write-Host "❌ bibtex 失败，错误信息："; Show-Issues "$BuildDir/bib.log"; throw "bibtex failed" }
 
-    Write-Host "🔨 [3/4] xelatex 第二遍编译…"
-    & xelatex "-synctex=1" "-output-directory=$BuildDir" "-interaction=nonstopmode" "-halt-on-error" $Main *> "$BuildDir/pass2.log"
-    if ($LASTEXITCODE -ne 0) { Write-Host "❌ xelatex 第二遍失败，错误信息："; Show-Issues "$BuildDir/pass2.log"; throw "xelatex (pass 2) failed" }
+    Write-Host "🔨 [3/4] pdflatex 第二遍编译…"
+    & pdflatex "-synctex=1" "-output-directory=$BuildDir" "-interaction=nonstopmode" "-halt-on-error" $Main *> "$BuildDir/pass2.log"
+    if ($LASTEXITCODE -ne 0) { Write-Host "❌ pdflatex 第二遍失败，错误信息："; Show-Issues "$BuildDir/pass2.log"; throw "pdflatex (pass 2) failed" }
 
-    Write-Host "🔨 [4/4] xelatex 第三遍编译…"
-    & xelatex "-synctex=1" "-output-directory=$BuildDir" "-interaction=nonstopmode" "-halt-on-error" $Main *> "$BuildDir/pass3.log"
-    if ($LASTEXITCODE -ne 0) { Write-Host "❌ xelatex 第三遍失败，错误信息："; Show-Issues "$BuildDir/pass3.log"; throw "xelatex (pass 3) failed" }
+    Write-Host "🔨 [4/4] pdflatex 第三遍编译…"
+    & pdflatex "-synctex=1" "-output-directory=$BuildDir" "-interaction=nonstopmode" "-halt-on-error" $Main *> "$BuildDir/pass3.log"
+    if ($LASTEXITCODE -ne 0) { Write-Host "❌ pdflatex 第三遍失败，错误信息："; Show-Issues "$BuildDir/pass3.log"; throw "pdflatex (pass 3) failed" }
 
     Copy-Item "$BuildDir/$Main.pdf" "$Main.pdf" -Force
 

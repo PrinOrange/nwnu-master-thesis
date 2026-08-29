@@ -1,10 +1,10 @@
 # ============================================================
 # Makefile for the NWNU graduate thesis template
-# Builds main.tex into main.pdf with XeLaTeX:
-#     xelatex -> bibtex -> xelatex -> xelatex
-# (The project was migrated to XeLaTeX; Chinese is handled by
-#  ctex + xeCJK, so the old latex+dvipdfmx / pdflatex routes
-#  are no longer needed.)
+# Builds main.tex into main.pdf with pdfLaTeX:
+#     pdflatex -> bibtex -> pdflatex -> pdflatex
+# (Chinese is handled by ctex + CJK under pdfLaTeX.  The .sty is
+#  engine-aware: it also still compiles under XeLaTeX, in which
+#  case ctex + xeCJK loads the bundled fonts from assets/.)
 #
 # All intermediate files go to build/; the final main.pdf is copied
 # back to the project root.  \include subdirs (body/, appendix/)
@@ -16,18 +16,20 @@
 #       Git Bash + Unix alike).  The Windows build.ps1 has the full
 #       Chinese/emoji output.
 #
-# Requires: GNU make + a TeX distribution with xelatex/bibtex on PATH.
+# Requires: GNU make + a TeX distribution with pdflatex/bibtex on PATH.
+#           Under pdfLaTeX, Chinese needs the Windows system fonts
+#           (SimSun/SimHei/KaiTi/FangSong/LiSu) installed.
 #
 # Targets:
-#   make           build with xelatex
+#   make           build with pdflatex
 #   make clean     remove intermediate files (keeps PDF)
 #   make cleanall  remove intermediates and the built PDF
 # ============================================================
 
-MAIN    := main
-BIB     := bibtex
-XELATEX := xelatex
-BUILD   := build
+MAIN      := main
+BIB       := bibtex
+PDFLATEX  := pdflatex
+BUILD     := build
 
 # \include 路径对应的 build 子目录
 BUILD_SUBDIRS := $(BUILD)/body $(BUILD)/appendix
@@ -48,14 +50,14 @@ all: $(MAIN).pdf
 # 编译（四步），全部输出到 build/，打印进度 + 警告/错误
 $(BUILD)/$(MAIN).pdf: $(SOURCES)
 	@mkdir -p $(BUILD_SUBDIRS)
-	@echo "[1/4] xelatex (pass 1) ..."
-	@$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass1.log 2>&1 || { echo "[!!] xelatex (pass 1) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass1.log | tail -n 30; exit 1; }
+	@echo "[1/4] pdflatex (pass 1) ..."
+	@$(PDFLATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass1.log 2>&1 || { echo "[!!] pdflatex (pass 1) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass1.log | tail -n 30; exit 1; }
 	@echo "[2/4] bibtex ..."
 	@$(BIB) $(BUILD)/$(MAIN) >$(BUILD)/bib.log 2>&1 || { echo "[!!] bibtex FAILED:"; grep -E 'Warning|^!' $(BUILD)/bib.log | tail -n 30; exit 1; }
-	@echo "[3/4] xelatex (pass 2) ..."
-	@$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass2.log 2>&1 || { echo "[!!] xelatex (pass 2) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass2.log | tail -n 30; exit 1; }
-	@echo "[4/4] xelatex (pass 3) ..."
-	@$(XELATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass3.log 2>&1 || { echo "[!!] xelatex (pass 3) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass3.log | tail -n 30; exit 1; }
+	@echo "[3/4] pdflatex (pass 2) ..."
+	@$(PDFLATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass2.log 2>&1 || { echo "[!!] pdflatex (pass 2) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass2.log | tail -n 30; exit 1; }
+	@echo "[4/4] pdflatex (pass 3) ..."
+	@$(PDFLATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass3.log 2>&1 || { echo "[!!] pdflatex (pass 3) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass3.log | tail -n 30; exit 1; }
 	@grep -E 'Warning' $(BUILD)/pass3.log | sed 's/^/[!] /' || true
 
 # 根目录 main.pdf 由 build/main.pdf 复制而来

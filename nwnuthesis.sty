@@ -12,7 +12,9 @@
 %    \documentclass[a4paper,12pt,openany,twoside]{book}
 %    \usepackage{nwnuthesis}
 %
-%  编译方式：XeLaTeX（依赖 ctex/xeCJK，中文字体为 Windows 系统字体）
+%  编译方式：pdfLaTeX 或 XeLaTeX（自动检测引擎）
+%    - pdfLaTeX：ctex(fontset=windows) + CJK 宏包，调用系统已安装的 Windows 中文字体
+%    - XeLaTeX：ctex/xeCJK，字体从 assets/ 目录加载
 %===========================================================================%
 
 \NeedsTeXFormat{LaTeX2e}
@@ -23,9 +25,21 @@
 %  1. 宏包加载
 %---------------------------------------------------------------------------%
 
-% 中文字体支持（必须在 \setCJKfamilyfont 之前加载）。
-% fontset=none：不启用 ctex 自带的字体配置，字体全部由本文件统一定义，
-% 避免重定义 ctex 默认字族时的 xeCJK 警告。
+% 编译引擎检测（pdfLaTeX / XeLaTeX 使用不同的中文字体方案）。
+\RequirePackage{iftex}
+
+% 中文字体支持。
+%   - pdfLaTeX：ctex 的 fontset=windows 走 CJK 宏包，直接调用系统已安装的
+%     Windows 中文字体（SimSun / SimHei / KaiTi / FangSong / LiSu）；
+%   - XeLaTeX：fontset=none，字体全部由本文件通过 fontspec/xeCJK 从
+%     assets/ 目录加载（随模板分发的字体副本）。
+\ifpdftex
+\RequirePackage[UTF8,fontset=windows]{ctex}
+
+% 西文字体：newtxtext 提供 Times 风格西文字体，与 newtxmath 配套使用；
+% 必须早于 newtxmath 加载。
+\RequirePackage{newtxtext}
+\else
 \RequirePackage[fontset=none]{ctex}
 
 % 西文字体：fontspec 必须在 newtxmath 之前加载；不要加载 newtxtext，
@@ -46,7 +60,8 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \setCJKfamilyfont{fs}[Path=./assets/]{simfang.ttf}
 \setCJKfamilyfont{li}[Path=./assets/]{simli.ttf}
 
-% ctex 常用字体命令（fontset=none 下需自行定义），指向上面的 assets 字体族
+% ctex 常用字体命令（fontset=none 下需自行定义；
+% pdfLaTeX 分支下由 ctex 的 windows fontset 提供同名命令）
 \def\songti{\CJKfamily{song}}
 \def\heiti{\CJKfamily{hei}}
 \def\kaishu{\CJKfamily{kai}}
@@ -58,6 +73,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \def\CJKrmdefault{song}
 \def\CJKsfdefault{song}
 \def\CJKttdefault{song}
+\fi
 
 % 页面几何
 \RequirePackage{geometry}
@@ -72,7 +88,8 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 % 页眉页脚
 \RequirePackage{fancyhdr}
 
-% 数学（newtxmath 必须晚于 fontspec/\setmainfont）
+% 数学（newtxmath 必须晚于西文字体加载：XeLaTeX 为 fontspec/\setmainfont，
+% pdfLaTeX 为 newtxtext）
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
 \RequirePackage{newtxmath}
@@ -139,11 +156,22 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 %---------------------------------------------------------------------------%
 %  2. 字体与字号命令
 %---------------------------------------------------------------------------%
-\newcommand{\song}{\CJKfamily{song}}        % 宋体
-\newcommand{\fs}{\CJKfamily{fs}}            % 仿宋体
-\newcommand{\kai}{\CJKfamily{kai}}          % 楷体
-\newcommand{\hei}{\CJKfamily{hei}}          % 黑体
-\newcommand{\li}{\CJKfamily{li}}            % 隶书
+% 自定义字族命令。
+% pdfLaTeX 分支：ctex(fontset=windows) 提供的字族名为 zhxxx；
+% XeLaTeX 分支：字族名由本文件定义为 xxx。
+\ifpdftex
+\newcommand{\song}{\CJKfamily{zhsong}}    % 宋体
+\newcommand{\fs}{\CJKfamily{zhfs}}        % 仿宋体
+\newcommand{\kai}{\CJKfamily{zhkai}}      % 楷体
+\newcommand{\hei}{\CJKfamily{zhhei}}      % 黑体
+\newcommand{\li}{\CJKfamily{zhli}}        % 隶书
+\else
+\newcommand{\song}{\CJKfamily{song}}      % 宋体
+\newcommand{\fs}{\CJKfamily{fs}}          % 仿宋体
+\newcommand{\kai}{\CJKfamily{kai}}        % 楷体
+\newcommand{\hei}{\CJKfamily{hei}}        % 黑体
+\newcommand{\li}{\CJKfamily{li}}          % 隶书
+\fi
 
 \newcommand{\yihao}{\fontsize{26pt}{26pt}\selectfont}     % 一号
 \newcommand{\xiaoyi}{\fontsize{24pt}{24pt}\selectfont}    % 小一
@@ -193,6 +221,10 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 % （用 LaTeX2e 的 hook 机制实现，避免直接 \gdef 破坏 hyperref 的
 %   cmd/addcontentsline/before 钩子）
 \AddToHook{cmd/addcontentsline/before}{\phantomsection}
+
+% 参考文献前恢复默认行距/字号/字体（正文中可能用临时字号，进参考文献前复位）。
+% 同样用 hook 实现，主文档无需在 \bibliography 前单独调用 \defaultfont。
+\AddToHook{cmd/bibliography/before}{\defaultfont}
 
 % 自定义项目列表标签及格式：\begin{publist} ... \end{publist}
 \newcounter{pubctr}
@@ -248,8 +280,13 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 % 目录/图表清单内部也调用 \chapter*，需临时关闭自动写目录
 \let\nwnuTableofcontents\tableofcontents
 \renewcommand\tableofcontents{%
+  \defaultfont   % 恢复正文默认行距/字号/字体（前文可能改过 \baselineskip 等）
   \nwnuSchapterTocfalse
   \nwnuTableofcontents
+  % 目录首页套用 caffil 版式（含走眉与页码）。
+  % \thispagestyle 需置于 \tableofcontents 之后才能覆盖目录内部默认的 plain 首页样式，
+  % 主文档无需再单独调用 \thispagestyle{caffil}。
+  \thispagestyle{caffil}%
 \nwnuSchapterToctrue}
 \let\nwnuListoffigures\listoffigures
 \renewcommand\listoffigures{%
@@ -367,6 +404,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
   \@mainmattertrue
   \pagenumbering{arabic}
   \pagestyle{XDU@main}
+  \defaultfont   % 正文开篇恢复默认行距/字号/字体
 \sloppy\raggedbottom}
 \makeatother
 
@@ -558,6 +596,9 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 
 % --- 封面排版 ---
 \def\makecover{%
+  % 封面信息配置（标题、作者、导师、专业等）由 preface/cover.tex 提供，
+  % 这里统一定义在 \makecover 内部，主文档只需调用一次 \makecover 即可。
+  \input{preface/cover}%
   \phantomsection
   \pdfbookmark[-1]{\@titleZh}{ctitle}
 
@@ -728,6 +769,9 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 
 % --- 摘要页排版 ---
 \newcommand{\abstractpageZh}{%
+  % 中文摘要内容（\abstractZh、\keywordsZh）由 preface/abstract.zh 提供，
+  % 这里统一定义在 \abstractpageZh 内部，主文档只需调用一次即可。
+  \input{preface/abstract.zh}%
   \clearpage
   \begin{center}%文本居中显示
     {\vspace*{11pt}\hei\sanhao{摘\quad 要}}
@@ -736,12 +780,17 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
   \thispagestyle{cchair}
   \pagestyle{cchair}
   \song\xiaosi\setlength{\baselineskip}{20pt}
-  \setlength\parindent{2em}\@abstractZh
+  % \@abstractZh 内容以换行开头，直接接在 \setlength 后会导致首段丢失首行缩进；
+  % 先 \par 明确开段，再 \indent 强制首段缩进，保证首段与后段一致地缩进 2 格。
+  \setlength\parindent{2em}\par\indent\@abstractZh
   \vspace{\baselineskip}
   {{\hei\xiaosi 关键词：} \@keywordsZh}
 }
 
 \newcommand{\abstractpageEn}{%
+  % 英文摘要内容（\abstractEn、\keywordsEn）由 preface/abstract.en 提供，
+  % 这里统一定义在 \abstractpageEn 内部，主文档只需调用一次即可。
+  \input{preface/abstract.en}%
   \clearpage
   \begin{center}%文本居中显示
     {\vspace*{-4pt}\sanhao\bf \sf{Abstract}}
