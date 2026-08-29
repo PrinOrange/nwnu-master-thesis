@@ -1,48 +1,162 @@
 % !TeX root = ../main.tex
-\chapter{输入标题}
-具体内容 XXX
+% !Mode:: "TeX:UTF-8"
 
-\begin{equation}
-  \nabla_\theta L(\theta)
-  =
-  \frac{\partial L}{\partial \theta}
+\chapter{基于SAE压缩与在线调度的数据采集方法}
+
+针对第 3 章提出的优化问题，本章给出具体的求解方法。整体思路是"先压缩、后调度"：一方面利用堆叠自编码器
+（SAE）对高维状态数据进行无监督特征压缩，降低单次传输的负载；另一方面基于李雅普诺夫漂移最小化，设计只在每个
+时隙依赖当前队列与 AoI 状态的在线调度算法，从而在保证队列稳定的同时逼近最优的时效性能。
+
+\section{总体框架}
+
+所提方法的总体框架分为两个模块：
+\begin{enumerate}
+  \item \textbf{数据压缩模块}：各源产生的原始状态数据维度较高，直接传输会占用过多时频资源。该模块利用
+        SAE 学习数据的低维特征表示，仅传输压缩后的低维码（latent code），从而显著降低传输开销。
+  \item \textbf{在线调度模块}：基站调度器在每个时隙依据当前各队列长度与 AoI 状态，通过最小化"漂移加惩罚"项，
+        决定将信道分配给哪一个源，使系统在队列稳定前提下获得尽可能小的加权 AoI。
+\end{enumerate}
+
+两个模块相互独立又彼此配合：压缩模块减小了传输一个状态包所需的资源，提升了单位资源的时效收益；调度模块则负责
+在有限资源下合理分配服务机会。下面分别给出两模块的具体实现。
+
+\section{基于堆叠自编码器的状态数据压缩}
+
+\subsection{压缩与重建过程}
+
+设源 $i$ 在时隙 $t$ 产生的原始状态数据为 $\boldsymbol{x}_i(t)\in\mathbb{R}^{d}$。SAE 将其编码为低维码
+$\boldsymbol{z}_i(t)\in\mathbb{R}^{k}$，$k\ll d$：
+
+\begin{equation}\label{eq:code}
+  \boldsymbol{z}_i(t) =
+  \sigma_b\Bigl(\boldsymbol{W}_{e}\boldsymbol{x}_i(t) + \boldsymbol{b}_{e}\Bigr),
 \end{equation}
 
-\section{一级标题}
+其中 $\boldsymbol{W}_{e}\in\mathbb{R}^{k\times d}$、$\boldsymbol{b}_{e}\in\mathbb{R}^{k}$ 为编码器参数，
+$\sigma_b$ 为激活函数（本文取 Sigmoid）。接收端利用解码器将码字近似还原为原始状态：
 
-具体内容 XXX
+\begin{equation}\label{eq:reconstruct}
+  \hat{\boldsymbol{x}}_i(t) =
+  \sigma_b\Bigl(\boldsymbol{W}_{d}\boldsymbol{z}_i(t) + \boldsymbol{b}_{d}\Bigr).
+\end{equation}
 
-\subsection{二级标题}
+压缩的目的一方面在于减小传输负载（由 $d$ 比特降至 $k$ 比特），另一方面在于抑制冗余噪声、凸显关键特征。SAE
+的预训练过程如\cref{alg:sae}所示。
 
-具体内容 XXX
+\begin{algorithm}[htb]
+  \caption{堆叠自编码器逐层预训练}\label{alg:sae}
+  \begin{algorithmic}
+    \STATE \textbf{输入：} 训练集 $\mathcal{D}=\{\boldsymbol{x}_m\}_{m=1}^{M}$，层数 $L$，学习率 $\eta$，迭代次数 $K$
+    \STATE \textbf{输出：} 各层编码器参数 $\{\boldsymbol{W}_e^{(l)},\boldsymbol{b}_e^{(l)}\}_{l=1}^{L}$
+    \alginputrule
+    \STATE \textbf{1.} 初始化各层权重与偏置
+    \FOR{$l=1$ to $L$}
+      \STATE \textbf{2.} 以第 $l-1$ 层输出为输入，训练第 $l$ 层自编码器
+      \REPEAT
+        \STATE \textbf{3.} 前向计算隐藏表示 $\boldsymbol{h}^{(l)}$ 与重建输出 $\hat{\boldsymbol{x}}$
+        \STATE \textbf{4.} 按\cref{eq:sae-loss}计算重构损失 $\mathcal{L}$
+        \STATE \textbf{5.} 梯度下降更新 $\boldsymbol{W}_e^{(l)},\boldsymbol{b}_e^{(l)}$
+      \UNTIL 损失收敛或达到 $K$ 次
+      \STATE \textbf{6.} 将 $\boldsymbol{h}^{(l)}$ 作为下一层的输入
+    \ENDFOR
+    \STATE \textbf{7.} 返回编码器参数
+  \end{algorithmic}
+\end{algorithm}
 
-\subsection{二级标题}
+\cref{code:sae}给出 SAE 逐层预训练的核心 Python 实现片段。
 
-具体内容 XXX
+\begin{code}[htbp]
+  \begin{lstlisting}[language=Python]
+import torch
+import torch.nn as nn
 
-\section{一级标题}
+def train_autoencoder(model, data, lr=1e-3, epochs=100):
+    opt = torch.optim.Adam(model.parameters(), lr=lr)
+    loss_fn = nn.MSELoss()
+    for epoch in range(epochs):
+        for xb in data:
+            xb = xb.view(xb.size(0), -1)
+            z = model.encode(xb)        # compress to low-dim code
+            xr = model.decode(z)        # reconstruct original state
+            loss = loss_fn(xr, xb)
+            opt.zero_grad(); loss.backward(); opt.step()
+        if epoch % 20 == 0:
+            print(f"epoch {epoch}: loss = {loss.item():.4f}")
+    return model
+  \end{lstlisting}
+  \caption{SAE 逐层预训练实现（PyTorch）}\label{code:sae}
+\end{code}
 
-具体内容 XXX
+\section{基于李雅普诺夫漂移最小化的在线调度}
 
-\subsection{二级标题}
+\subsection{每时隙决策准则}
 
-具体内容 XXX
+记 $\boldsymbol{Q}(t)=(Q_1(t),\ldots,Q_N(t))$ 为队列向量，$\boldsymbol{\Delta}(t)$ 为 AoI 向量。引入权重
+参数 $V\ge 0$ 后，将"漂移加惩罚"项具体化为
 
-\subsection{二级标题}
+\begin{equation}\label{eq:drift-plus}
+  \Delta L(t) + V\cdot \sum_{i=1}^{N}\omega_i\,\mathbb{E}\{\Delta_i(t)\}.
+\end{equation}
 
-具体内容 XXX
+由\cref{eq:drift-bound}，漂移上界中的控制项可简化为仅与当前决策相关的部分。具体地，若时隙 $t$ 服务队列 $i$，
+则该队列的二次长度项与惩罚项产生确定的即时值。因此，最优调度决策为
 
-\section{一级标题}
+\begin{equation}\label{eq:decision}
+  i^{*}(t) = \arg\min_{i\in\{1,\ldots,N\}}\;\;
+  \underbrace{Q_i(t)}_{漂移项} + \underbrace{V\,\omega_i\,\Delta_i(t)}_{惩罚项},
+\end{equation}
 
-具体内容 XXX
+即在所有非空队列中，选择"队列长度 $Q_i(t)$ 加上加权 AoI 惩罚 $V\omega_i\Delta_i(t)$"最小的源进行服务。
+该决策仅依赖当前时隙可观测的队列与 AoI 状态，无需任何未来信息，因此是因果且可在线执行的。完整的在线调度算法
+如\cref{alg:scheduling}所示。
 
-\subsection{二级标题}
+\begin{algorithm}[htb]
+  \caption{基于李雅普诺夫漂移最小化的在线调度}\label{alg:scheduling}
+  \begin{algorithmic}
+    \STATE \textbf{输入：} 权重 $\boldsymbol{\omega}$，权衡参数 $V$，时隙数 $T$
+    \STATE \textbf{输出：} 每时隙调度决策 $\{s_i(t)\}$
+    \alginputrule
+    \FOR{$t=1$ to $T$}
+      \STATE \textbf{1.} 观测各队列长度 $\boldsymbol{Q}(t)$ 与 AoI $\boldsymbol{\Delta}(t)$
+      \STATE \textbf{2.} 对每个源 $i$ 计算代价 $c_i(t)=Q_i(t)+V\omega_i\Delta_i(t)$
+      \STATE \textbf{3.} $i^{*}(t)=\arg\min_{i}c_i(t)$
+      \IF{$Q_{i^{*}}(t)>0$}
+        \STATE \textbf{4.} $s_{i^{*}}(t)=1$，其余为 $0$；传输后更新队列与 AoI
+      \ELSE
+        \STATE \textbf{5.} 本时隙不传输（$s_i(t)=0,\forall i$）
+      \ENDIF
+      \STATE \textbf{6.} 按\cref{eq:aoi-simple}、\cref{eq:queue-evol}更新系统状态
+    \ENDFOR
+  \end{algorithmic}
+\end{algorithm}
 
-具体内容 XXX
+\subsection{性能分析}
 
-\subsection{二级标题}
+下面给出所提在线调度算法的性能界。记 $f^{\ast}$ 为问题 P1 的最优值（即最小可达长时平均加权 AoI），
+$\overline{\Delta}$ 为所提算法获得的长时平均加权 AoI。
 
-具体内容 XXX
+\begin{theorem}\label{thm:performance}
+  若到达率向量 $\boldsymbol{\lambda}$ 严格位于系统稳定区域内部（即存在 $\delta>0$ 使得
+  $\lambda_i+\delta$ 仍可稳定），且李雅普诺夫函数如\cref{eq:lyapunov}所定义，则所提在线调度算法保证队列速率
+  稳定，并且
+  \begin{equation}\label{eq:performance-bound}
+    \overline{\Delta} \le f^{\ast} + \frac{B}{V},
+  \end{equation}
+  其中 $B$ 为与系统参数有关的正常数。
+\end{theorem}
 
-\section{本章小结}
-具体内容 XXX
+\begin{proof}
+  由\cref{eq:drift-plus}与\cref{eq:decision} 的最优性，所提算法在每个时隙最小化了漂移加惩罚项的上界。利用
+  标准李雅普诺夫漂移分析，可推导出长时平均惩罚与 $f^{\ast}$ 之差被 $O(1/V)$ 限制，同时队列稳定条件被
+  $O(V)$ 权衡，从而得到\cref{eq:performance-bound}。具体推导过程与\cref{thm:lyapunov-drift}的证明类似。
+\end{proof}
+
+\cref{eq:performance-bound} 表明：权衡参数 $V$ 越大，所提算法的时效性能越接近最优值 $f^{\ast}$；但由李雅普诺夫
+优化的经典结论可知，$V$ 增大也会导致队列平均长度增大、稳态时延上升。因此 $V$ 需要在"时效性能"与"队列稳定裕度"
+之间折中，实际中可根据对时延的容忍程度选取。
+
+\section{复杂度分析}
+
+SAE 压缩模块的训练为离线过程，其计算复杂度与网络规模、训练样本数及迭代次数有关。在线调度模块在每个时隙仅需
+$O(N)$ 次加法和比较操作（计算 $N$ 个源的代价并选择最小值），空间占用为 $O(N)$。因此所提在线算法的每时隙
+复杂度为 $O(N)$，与源数量成线性关系，可满足大规模物联网系统在线部署的需求。

@@ -445,6 +445,7 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \renewcommand{\thefigure}{\arabic{chapter}-\arabic{figure}}
 \renewcommand{\thetable}{\arabic{chapter}-\arabic{table}}
 \renewcommand{\theequation}{\arabic{chapter}-\arabic{equation}}
+\renewcommand{\thealgorithm}{\arabic{chapter}-\arabic{algorithm}}
 \renewcommand{\thesubfigure}{(\alph{subfigure})}  % 子图编号 (a)
 \renewcommand{\thesubtable}{(\alph{subtable})}    % 子表编号 (a)
 
@@ -514,10 +515,13 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \captiondelim{~~~~}               % longtable 表头分隔符
 
 % 正文排印细节
+% 浮动体（图/表/算法/代码等）与上下正文的间距：至少约半倍正文行高（正文 12pt、行高约 20pt，半倍约 10pt）。
+% 原 intextsep=2pt 太挤，现放宽，使浮动体上下留出呼吸空间。
 \renewcommand\arraystretch{1.5}
-\setlength{\intextsep}{2pt}
-\setlength{\abovecaptionskip}{2pt}
-\setlength{\belowcaptionskip}{2pt}
+\setlength{\intextsep}{12pt}        % 文中浮动体与上下正文间距
+\setlength{\floatsep}{10pt}         % 相邻浮动体间距
+\setlength{\abovecaptionskip}{6pt}  % 题注上方间距
+\setlength{\belowcaptionskip}{6pt}  % 题注下方间距
 \makeatletter
 \renewcommand{\ALC@linenosize}{\xiaosi}
 \makeatother
@@ -528,9 +532,21 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \theorembodyfont{\song\rmfamily}
 \theoremheaderfont{\hei\rmfamily}
 
+% 证明环境（ntheorem 的 amsthm 分支在本模板选项下未启用，此处自定义简易中文版）。
+% 用法：\begin{proof} ... \end{proof}，默认题头为「证明」。
+\newenvironment{proof}[1][证明]{%
+  \par\vspace{5pt}\noindent{\kaishu\bfseries #1：}~\ignorespaces
+}{%
+  \par\vspace{5pt}
+}
+
 \floatname{algorithm}{算法}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+% 算法「输入/输出」声明段与算法主体之间的分割横线。
+% 用法：在 \STATE \textbf{输出：}... 之后插入 \alginputrule。
+\newcommand{\alginputrule}{\vspace{0.3em}\hrule\vspace{0.3em}}
 
 % --- JXD 系列：定理/引理/推论/定义/命题（正文中使用的自定义环境） ---
 \newcounter{theorem}[chapter]

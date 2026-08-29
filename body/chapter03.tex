@@ -1,43 +1,94 @@
 % !TeX root = ../main.tex
-\chapter{输入标题}
+% !Mode:: "TeX:UTF-8"
 
-具体内容 XXX
+\chapter{系统模型与问题建模}
 
-\section{一级标题}
+本章建立面向 6G 物联网的多源状态更新系统模型，推导 AoI 与队列状态的演化方程，并在队列稳定约束下将数据采集与
+传输调度问题形式化为随机优化问题。
 
-具体内容 XXX
+\section{网络模型}
 
-\subsection{二级标题}
+考虑一个由 $N$ 个源节点、$N$ 个缓存队列以及一个基站构成的多源状态更新系统，如图\cref{fig:system}所示。每个
+源节点 $i$（$i=1,\ldots,N$）以随机方式产生状态更新（如传感读数），并将最新的状态包放入其对应的缓存队列
+$Q_i$ 中。基站配备一个调度器，在每个时隙根据当前各队列长度与 AoI 状态，从所有非空队列中选择至多一个队列进行
+服务（传输）。系统采用离散时隙模型，时隙索引为 $t=0,1,2,\ldots$。
 
-具体内容 XXX
+\begin{figure}[htbp]
+  \vspace*{6pt}
+  \centering
+  \includegraphics[width=0.72\textwidth]{1-1}
+  \caption{多源状态更新与排队传输系统模型}\label{fig:system}
+  \vspace*{10pt}
+\end{figure}
 
-\subsection{二级标题}
+设 $F \in \{1,2,\ldots,F_{\max}\}$ 为每个时隙允许的最多传输次数（即服务速率），本文主要考虑
+$F=1$ 的情形，即单服务队列系统。为不失一般性，假设各源到达过程相互独立，信道状态在每个时隙独立同分布。
 
-具体内容 XXX
+\section{状态更新与 AoI 演化}
 
-\section{一级标题}
+令 $a_i(t)\in\{0,1\}$ 表示时隙 $t$ 源 $i$ 是否产生一个新的状态更新（$a_i(t)=1$ 表示产生）。到达过程
+$\{a_i(t)\}$ 为伯努利过程，到达率为 $\lambda_i$，即 $\mathbb{E}\{a_i(t)\}=\lambda_i$。每次成功传输后，接收端
+持有的该源信息被替换为最新的状态包。
 
-具体内容 XXX
+用 $\Delta_i(t)$ 表示时隙 $t$ 开始时接收端对源 $i$ 的 AoI。若时隙 $t$ 调度器选择了队列 $i$ 并且该队列非空，
+则队列 $i$ 的最新媒体被成功发送，AoI 被重置为 $1$；否则 AoI 随时间线性增长。因此 AoI 的演化可写为
 
-\subsection{二级标题}
+\begin{equation}\label{eq:aoi-simple}
+  \Delta_i(t+1) =
+  \begin{cases}
+    1, & s_i(t)=1 \text{ 且 } Q_i(t)>0,\\
+    \Delta_i(t) + 1, & \text{否则},
+  \end{cases}
+\end{equation}
 
-具体内容 XXX
+其中 $s_i(t)\in\{0,1\}$ 为调度决策变量，$s_i(t)=1$ 表示时隙 $t$ 选择服务队列 $i$。\cref{eq:aoi-simple} 表明，
+只要某时隙成功服务了队列 $i$，其 AoI 即被重置为最小值 $1$；否则每个时隙增加 $1$。
 
-\subsection{二级标题}
+\section{队列演化与调度约束}
 
-具体内容 XXX
+令 $Q_i(t)$ 为时隙 $t$ 开始时队列 $i$ 的长度。每个时隙，队列 $i$ 可能新增一个状态包（以概率 $\lambda_i$），
+若被服务则减少一个状态包（假设每次服务一个包，队列长度不为负）。队列演化方程为
 
-\section{一级标题}
+\begin{equation}\label{eq:queue-evol}
+  Q_i(t+1) = \max\bigl\{Q_i(t) + a_i(t) - s_i(t),\; 0\bigr\}.
+\end{equation}
 
-具体内容 XXX
+调度决策需满足单服务约束：在每个时隙，至多一个源被服务，即
 
-\subsection{二级标题}
+\begin{equation}\label{eq:constraint-1}
+  \sum_{i=1}^{N} s_i(t) \le 1,\quad s_i(t)\in\{0,1\},\;\forall i,t.
+\end{equation}
 
-具体内容 XXX
+同时要求队列满足速率稳定条件，即队列长度不随时间的推移而无限增长：
 
-\subsection{二级标题}
+\begin{equation}\label{eq:constraint-2}
+  \lim_{t\to\infty}\frac{1}{t}\sum_{\tau=0}^{t-1}\sum_{i=1}^{N}\mathbb{E}\{Q_i(\tau)\} < \infty.
+\end{equation}
 
-具体内容 XXX
+\begin{definition}\label{def:feasible}
+  (可行调度策略) 若调度策略 $\pi$ 在每时隙仅依赖当前队列状态与 AoI 信息（而非未来信息）确定决策，且满足
+  \cref{eq:constraint-1} 与\cref{eq:constraint-2}，则称 $\pi$ 为可行调度策略。所有可行策略构成的集合记为
+  $\Pi_{\mathrm{fea}}$。
+\end{definition}
 
-\section{本章小结}
-具体内容 XXX
+\section{优化问题形式化}
+
+本文的目标是在所有可行策略中，最小化系统的长时平均加权 AoI，即求解如下优化问题。
+
+\begin{proposition}\label{prop:optimization-problem}
+  (问题 P1) 在满足队列稳定约束\cref{eq:constraint-1}--\cref{eq:constraint-2}的前提下，最小化系统的长时
+  平均加权 AoI：
+  \begin{align}
+    \min_{\pi\in\Pi_{\mathrm{fea}}}\;\;
+    \overline{\Delta}_{\boldsymbol{\omega}}
+    & = \lim_{T\to\infty}\frac{1}{T}\sum_{t=0}^{T-1}\sum_{i=1}^{N}\omega_i\,\mathbb{E}\{
+    \Delta_i(t)\}, \label{eq:objective}\\
+    \text{s.t.}\;\; & \text{\cref{eq:constraint-1}、\cref{eq:constraint-2}。}  \notag
+  \end{align}
+\end{proposition}
+
+由于到达过程与信道状态均随机且无先验分布信息，\cref{eq:objective} 是一个典型的随机优化问题。直接求解其最优
+策略需要完整的信道与到达统计信息，在实际系统中难以获得。为此，第 4 章将采用李雅普诺夫漂移最小化方法，构造
+不依赖未来信息的在线调度算法，在保证队列稳定的同时逼近最优性能。此外，当权重 $\omega_i$ 相等时，
+\cref{eq:objective} 退化为最小化系统总平均 AoI；当 $\omega_i$ 与源 $i$ 的重要程度成正比时，则可体现对
+关键源的优先保护。

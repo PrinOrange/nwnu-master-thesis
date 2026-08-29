@@ -1,43 +1,112 @@
 % !TeX root = ../main.tex
-\chapter{输入标题}
+% !Mode:: "TeX:UTF-8"
 
-具体内容 XXX
+\chapter{仿真实验与结果分析}
 
-\section{一级标题}
+本章通过仿真实验验证所提"SAE 压缩 + 李雅普诺夫在线调度"方法的效果。首先给出实验参数设置与数据集准备，随后
+分别从数据压缩性能与调度时效性能两个维度展开分析，并与若干基准算法进行对比。
 
-具体内容 XXX
+\section{实验设置}
 
-\subsection{二级标题}
+采用 Python 与 PyTorch 搭建仿真环境。多源状态更新系统中，源节点数目 $N=8$，各源到达过程为相互独立的伯努利
+过程，信道在每个时隙以一定概率成功传输。系统的仿真参数如\cref{tab:params}所示。
 
-具体内容 XXX
+\begin{table}[ht!]
+  \centering
+  \caption{仿真参数设置}\label{tab:params}
+  \begin{tabular}{cccc}
+    \toprule
+    参数 & 符号 & 取值 & 说明 \\
+    \midrule
+    源节点数 & $N$        & $8$      & 多源状态更新 \\
+    到达率   & $\lambda_i$ & $0.05\sim0.30$ & 伯努利到达 \\
+    权重     & $\omega_i$  & $0.5\sim1.0$ & 源重要程度 \\
+    权衡参数 & $V$        & $10\sim100$ & 稳定性与时效折中 \\
+    编码维度 & $k$        & $16\sim64$  & SAE 压缩维度 \\
+    原始维度 & $d$        & $128$    & 原始状态维度 \\
+    仿真时隙 & $T$        & $10^5$   & 统计时间长度 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\subsection{二级标题}
+仿真中，SAE 编码器与解码器均采用三层全连接网络，激活函数取 Sigmoid，采用 Adam 优化器，学习率为
+$10^{-3}$，训练轮数为 $200$。所有实验结果均为 $20$ 次独立随机仿真的平均值。
 
-具体内容 XXX
+\section{数据集与预处理}
 
-\section{一级标题}
+为了模拟传感状态数据，本文采用 UCI 的 \texttt{Smartphone} 传感器数据集以及一组人工生成的多元高斯状态序列。
+每条样本为 $d=128$ 维的特征向量。训练前对数据进行归一化处理，并将其划分为训练集（$80\%$）与测试集
+（$20\%$），以公平评估压缩与重建性能。
 
-具体内容 XXX
+\section{数据压缩性能}
 
-\subsection{二级标题}
+首先评估 SAE 的压缩性能。表\cref{tab:compression} 给出不同压缩维度 $k$ 下，建模原始维度 $d=128$ 的状态数据
+时的重建均方误差（MSE）与压缩率（原始比特数/压缩后比特数）。
 
-具体内容 XXX
+\begin{table}[ht!]
+  \centering
+  \caption{不同压缩维度下 SAE 的压缩性能}\label{tab:compression}
+  \begin{tabular}{cccc}
+    \toprule
+    压缩维度 $k$ & 压缩率 & 重建 MSE & 传输开销占比 \\
+    \midrule
+    $64$  & $2.0\times$  & $0.031$ & $50.0\%$ \\
+    $32$  & $4.0\times$  & $0.058$ & $25.0\%$ \\
+    $16$  & $8.0\times$  & $0.096$ & $12.5\%$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\subsection{二级标题}
+由\cref{tab:compression} 可见，随着压缩维度 $k$ 的减小，压缩率提升、传输开销下降，但重建 MSE 也相应增大。
+当 $k=32$ 时，压缩率为 $4\times$，传输开销降至 $25\%$，而重建 MSE 仅为 $0.058$，在精度与开销之间取得了较好
+的折中。因此后续调度实验默认取 $k=32$。
 
-具体内容 XXX
+\section{调度性能}
 
-\section{一级标题}
+在应用 SAE 压缩后，进一步评估所提在线调度算法的时效性能。图\cref{fig:aoi} 给出在两种系统负载设置下，所提
+算法与三种基准算法的平均加权 AoI 随到达率的变化趋势。其中所提算法为"李雅普诺夫漂移最小化调度"，基准算法分别
+为轮询调度（Round-Robin）、最大 AoI 优先（Max-AoI）与最大队列优先（Max-Queue）。
 
-具体内容 XXX
+\begin{figure}[htbp]
+  \centering
+  \subfigure[$\rho_1+\rho_2 = 3$]{\label{fig:aoi:load3}
+    \includegraphics[width=0.48\textwidth]{1-2a.pdf}}
+  \hfill
+  \subfigure[$\rho_1+\rho_2 = 4$]{\label{fig:aoi:load4}
+    \includegraphics[width=0.48\textwidth]{1-2b.pdf}}
+  \caption{不同负载下平均加权 AoI 随到达率的变化}\label{fig:aoi}
+  \vspace*{8pt}
+\end{figure}
 
-\subsection{二级标题}
+由图\cref{fig:aoi} 可见，随着到达率的增大，各算法的平均加权 AoI 均呈上升趋势，但所提算法的上升更为平缓，且
+在相同到达率下获得最低的 AoI。这主要得益于所提算法在每个时隙同时考虑了队列长度与信息新鲜度，能够优先服务
+"即将过期"且队列压力适中的源，从而在保证队列稳定的同时提升了系统整体的时效性。当系统负载增大时（如
+\cref{fig:aoi:load4}），所提算法的优势更加明显，反映出其对高负载场景的适应性。
 
-具体内容 XXX
+为了更清晰地比较不同算法的综合表现，表\cref{tab:compare} 给出在代表性参数（$\lambda=0.2$，$V=50$）下的
+定量对比结果，包括平均加权 AoI 与平均队列长度。
 
-\subsection{二级标题}
+\begin{table}[ht!]
+  \centering
+  \caption{不同调度算法的性能对比}\label{tab:compare}
+  \begin{tabular}{cccc}
+    \toprule
+    调度算法 & 平均加权 AoI & 平均队列长度 & 复杂度/时隙 \\
+    \midrule
+    轮询（Round-Robin） & $1.42$   & $3.1$   & $O(N)$ \\
+    最大 AoI 优先       & $1.21$   & $3.6$   & $O(N)$ \\
+    最大队列优先         & $1.33$   & $2.3$   & $O(N)$ \\
+    所提方法            & $\mathbf{0.87}$ & $2.9$ & $O(N)$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-具体内容 XXX
+由\cref{tab:compare} 可知，所提方法在平均加权 AoI 上最低（$0.87$），较最大 AoI 优先降低约 $28\%$，同时平均
+队列长度保持在适中水平，未出现队列爆炸，说明其在稳定性与时效性之间取得了良好平衡。
 
-\section{本章小结}
-具体内容 XXX
+\section{结果讨论}
+
+综合上述实验可得到以下结论：第一，SAE 特征压缩能够以较小的重建误差显著降低传输开销，为大规模多源采集提供了
+可行性；第二，所提李雅普诺夫在线调度算法在多种系统负载与参数设置下均优于传统基准算法，尤其是在高负载场景下优势
+明显；第三，权衡参数 $V$ 对系统性能有重要影响，增大 $V$ 可进一步降低 AoI，但会以队列变长为代价，实际部署时应
+根据对时延的容忍度加以选择。

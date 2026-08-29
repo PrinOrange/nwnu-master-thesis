@@ -3,17 +3,49 @@
 %  run mode: pdfLaTeX（兼容 XeLaTeX）
 %  !Mode: "Tex:Utf-8"
 %  英文摘要：定义 \abstractEn 与 \keywordsEn，由 main.tex 排版输出
-%  中文摘要见 abstract.tex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \abstractEn{
 
-  Externally pressurized gas bearing has been widely used in the
-  field of aviation, semiconductor, weave, and measurement apparatus
-  because of its advantage of high accuracy, little friction, low
-  heat distortion, long life-span, and no pollution. In this thesis,
-  based on the domestic and overseas researching……
+  With the deep integration of the Internet of Things (IoT) and
+  the sixth-generation (6G) mobile communication, a huge number of
+  sensing nodes continuously generate status-update data in
+  real-time monitoring scenarios. Under the constraints of limited
+  spectrum and energy, how to efficiently collect and schedule these
+  multi-source data while keeping the system stable and reducing the
+  transmission delay and staleness has become a key problem. The Age
+  of Information (AoI), as an emerging metric that quantifies the
+  freshness of the information held at the receiver, has attracted
+  extensive attention from both academia and industry.
+
+  This thesis studies the joint data collection and transmission
+  scheduling problem in multi-source status-update scenarios for 6G
+  IoT. The main contributions are threefold. First, for the network
+  structure where multi-source sensors are aggregated to the base
+  station through queues, a status-update and queuing-transmission
+  system model is established, and the problem is formulated as a
+  discrete-time optimization problem that minimizes the long-term
+  average weighted AoI under the queue-stability constraint. Second,
+  by combining deep learning with queuing theory, a Stacked
+  Autoencoder (SAE) is exploited to compress high-dimensional state
+  data in an unsupervised manner, so as to reduce the per-transmission
+  load without significant information loss. Third, an online
+  scheduling policy is designed based on Lyapunov drift minimization,
+  which decides the optimal source to transmit in each slot according
+  to the current queue state and AoI, achieving asymptotically optimal
+  and stable scheduling without relying on future channel and arrival
+  statistics.
+
+  Simulation results show that, compared with classical baselines
+  such as round-robin, maximum-AoI-first and maximum-queue-first
+  policies, the proposed method significantly reduces the long-term
+  average weighted AoI while guaranteeing queue stability, and the
+  combination of the SAE compression further reduces the transmission
+  bit overhead and improves the overall timeliness. This work provides
+  a theoretical basis and engineering reference for large-scale data
+  collection and information-timeliness guarantee in 6G IoT.
 
 }
 %这里是英文关键词
-\keywordsEn{keyword 1; keyword 2; keyword 3; ……; keyword 6}
+\keywordsEn{Age of Information; Stacked Autoencoder; Lyapunov Optimization;
+Multi-source Scheduling; Internet of Things; 6G}

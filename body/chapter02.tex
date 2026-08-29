@@ -1,43 +1,128 @@
 % !TeX root = ../main.tex
-\chapter{输入标题}
+% !Mode:: "TeX:UTF-8"
 
-第 2 章，第 3 章，……，结论的写法这是论文作者的研究内容，不能将他人研究成果不加区分地掺和进来。已经在引言的文献综述部分讲过的内容，这里不需要再重复。
+\chapter{相关理论基础}
 
-\section{一级标题}
+本章介绍本文所依赖的基础理论与工具，主要包括信息新鲜度（AoI）的度量方法、李雅普诺夫优化的基本原理以及
+堆叠自编码器（SAE）的结构与训练方法，为后续的系统建模与算法设计奠定基础。
 
-具体内容 XXX
+\section{信息新鲜度（AoI）}
 
-\subsection{二级标题}
+考虑一个源节点持续生成状态更新的场景。设 $u_i(t)$ 表示源节点 $i$ 的最新媒体在接收端被成功接收时所对应的
+状态生成时刻，则时刻 $t$ 接收端对源 $i$ 的信息新鲜度（AoI）定义为当前时刻与最新接收信息生成时刻之差，
+即
 
-具体内容 XXX
+\begin{equation}\label{eq:aoi}
+  \Delta_i(t) = t - u_i(t).
+\end{equation}
 
-\subsection{二级标题}
+AoI 的物理含义是"接收端持有的信息有多旧"。当新信息成功到达接收端时，AoI 会瞬时下降；而在两次更新之间，
+AoI 随时间线性递增。因此 $\Delta_i(t)$ 反映了从状态生成、排队等待到成功传输的完整"陈旧"过程，是一种综合的
+时效性度量。
 
-具体内容 XXX
+为刻画一段观察时间内的整体时效性能，通常采用 AoI 的时间平均。记源 $i$ 在时间区间 $[0,T]$ 内的平均 AoI
+为 $\overline{\Delta}_i$，则
 
-\section{一级标题}
+\begin{equation}\label{eq:aoi-avg}
+  \overline{\Delta}_i = \frac{1}{T}\int_{0}^{T}\Delta_i(t)\,\mathrm{d}t.
+\end{equation}
 
-具体内容 XXX
+在多源系统中，我们更关心所有源的加权平均 AoI。引入权重向量 $\boldsymbol{\omega} = (\omega_1,\ldots,\omega_N)^{\mathsf{T}}$，
+其中 $\omega_i > 0$ 表示源 $i$ 的重要程度，则系统的长时平均加权 AoI 定义为
 
-\subsection{二级标题}
+\begin{equation}\label{eq:aoi-weighted}
+  \overline{\Delta}_{\boldsymbol{\omega}} =
+  \lim_{T\to\infty}\frac{1}{T}\sum_{i=1}^{N}\omega_i\int_{0}^{T}\Delta_i(t)\,\mathrm{d}t.
+\end{equation}
 
-具体内容 XXX
+\cite{2015-Pappas-ICC} 指出，AoI 与传统的时延指标不同，它不仅取决于信息的传递时延，还取决于信息的生成
+频率与到达过程，因此在实时监测系统中具有更本质的指导意义。
 
-\subsection{二级标题}
+\section{李雅普诺夫优化}
 
-具体内容 XXX
+李雅普诺夫优化提供了一种在动态随机系统中实现渐近最优控制的框架，其核心思想是在每个时隙最小化一个"漂移加
+惩罚"项，从而在不依赖未来信息的前提下，在系统稳定性与目标性能之间取得平衡。
 
-\section{一级标题}
+考虑由 $N$ 个队列组成的系统，记 $\boldsymbol{Q}(t) = (Q_1(t),\ldots,Q_N(t))^{\mathsf{T}}$ 为时隙 $t$
+的队列长度向量。定义二次李雅普诺夫函数为
 
-具体内容 XXX
+\begin{equation}\label{eq:lyapunov}
+  L\bigl(\boldsymbol{Q}(t)\bigr) = \frac{1}{2}\sum_{i=1}^{N}Q_i^2(t).
+\end{equation}
 
-\subsection{二级标题}
+李雅普诺夫漂移定义为相邻两个时隙的 $L$ 之差的条件期望：
 
-具体内容 XXX
+\begin{equation}\label{eq:drift}
+  \Delta L(t) =
+  \mathbb{E}\Bigl\{L\bigl(\boldsymbol{Q}(t+1)\bigr) - L\bigl(\boldsymbol{Q}(t)\bigr)\;
+  \big|\;\boldsymbol{Q}(t)\Bigr\}.
+\end{equation}
 
-\subsection{二级标题}
+李雅普诺夫漂移定理保证了系统稳定性的一个充分条件，本文将其表述为如下定理。
 
-具体内容 XXX
+\begin{theorem}\label{thm:lyapunov-drift}
+  若存在常数 $B>0$、$\varepsilon>0$ 以及一个有限状态的正当 $t$ 有限时满足
+  $\mathbb{E}\{L(\boldsymbol{Q}(0))\}<\infty$，且对任意时隙 $t$ 都有
+  \begin{equation}\label{eq:drift-bound}
+    \Delta L(t) \le B - \varepsilon\sum_{i=1}^{N}\mathbb{E}\left\{Q_i(t)\mid
+    \boldsymbol{Q}(t)\right\},
+  \end{equation}
+  则所有队列都是速率稳定的，即
+  $\lim_{t\to\infty}\frac{1}{t}\sum_{\tau=0}^{t-1}\sum_{i=1}^{N}\mathbb{E}\{Q_i(\tau)\} \le \frac{B}{\varepsilon}$。
+\end{theorem}
 
-\section{本章小结}
-具体内容 XXX
+\begin{proof}
+  对\cref{eq:drift-bound} 两边取期望，利用鞅收敛与整理可得
+  $\mathbb{E}\{L(\boldsymbol{Q}(t))\}-\mathbb{E}\{L(\boldsymbol{Q}(0))\}
+  \le Bt-\varepsilon\sum_{\tau=0}^{t-1}\sum_{i=1}^{N}\mathbb{E}\{Q_i(\tau)\}$。
+  由于 $L(\cdot)\ge 0$，故
+  $\frac{1}{t}\sum_{\tau=0}^{t-1}\sum_{i=1}^{N}\mathbb{E}\{Q_i(\tau)\}\le
+  \frac{B}{\varepsilon}+\frac{\mathbb{E}\{L(\boldsymbol{Q}(0))\}}{t}$。
+  令 $t\to\infty$ 即得结论。
+\end{proof}
+
+在具体优化中，通常对漂移与目标惩罚的加权和进行最小化，即每时隙求解
+
+\begin{equation}\label{eq:drift-penalty}
+  \min_{\boldsymbol{a}(t)}\;\; \Delta L(t) + V\cdot p\bigl(\boldsymbol{a}(t)\bigr),
+\end{equation}
+
+其中 $\boldsymbol{a}(t)$ 为时隙 $t$ 的控制决策，$p(\cdot)$ 为目标性能代价（如 AoI），$V\ge 0$ 为权衡
+参数，用于调节"稳定性"与"目标性能"之间的优先级。
+
+\section{堆叠自编码器}
+
+堆叠自编码器（Stacked Autoencoder，SAE）是一种由多层编码器与解码器构成的无监督神经网络，其目标是在
+不使用标签信息的情况下学习输入数据的压缩表示。设输入为 $\boldsymbol{x}\in\mathbb{R}^{d}$，编码器通过
+逐层映射将其编码为潜在表示 $\boldsymbol{z}$，解码器再将 $\boldsymbol{z}$ 重建为
+$\hat{\boldsymbol{x}}$。单层编码与解码过程分别表示为
+
+\begin{equation}\label{eq:encoder}
+  \boldsymbol{h}^{(l)} = \sigma\Bigl(\boldsymbol{W}_{e}^{(l)}\boldsymbol{h}^{(l-1)}
+  +\boldsymbol{b}_{e}^{(l)}\Bigr),
+\end{equation}
+\begin{equation}\label{eq:decoder}
+  \hat{\boldsymbol{x}} = \sigma'\Bigl(\boldsymbol{W}_{d}\boldsymbol{z}
+  +\boldsymbol{b}_{d}\Bigr),
+\end{equation}
+
+其中 $\sigma$ 与 $\sigma'$ 为激活函数（如 Sigmoid 或 ReLU），$\boldsymbol{W}_{e}$、$\boldsymbol{W}_{d}$
+为权重矩阵，$\boldsymbol{b}_{e}$、$\boldsymbol{b}_{d}$ 为偏置向量。SAE 的训练采用逐层无监督预训练，即先训练
+第一层自编码器，将其输出的隐藏表示作为下一层的输入，逐层完成后整体微调。整体训练的损失函数通常取输入与重建
+输出之间的均方误差：
+
+\begin{equation}\label{eq:sae-loss}
+  \mathcal{L} = \frac{1}{M}\sum_{m=1}^{M}\bigl\|
+  \boldsymbol{x}_{m} - \hat{\boldsymbol{x}}_{m}\bigr\|_{2}^{2},
+\end{equation}
+
+其中 $M$ 为样本个数。通过最小化\cref{eq:sae-loss}，SAE 能够学习到保留主要信息量的低维特征表示，从而在解码
+端近似还原原始数据，为后续的降维压缩与特征提取奠定基础。
+
+\section{多源接入网络背景}
+
+本文所研究的系统为一个典型的"多源汇聚"结构：多个传感源各自生成状态更新并进入独立的缓存队列，由一个调度器在
+每个时隙决定哪个队列向基站发送、是否发送以及发送多少数据。此类结构广泛存在于工业物联网、智能电网、环境监测等
+场景中。其核心挑战在于，各源的到达过程、信道状态与重要程度均存在差异，如何在有限的时隙与资源下协调多个队列的
+服务，既保证队列不无限增长，又最大化整体信息的时效性，是本章所述 AoI 度量与李雅普诺夫优化工具所要解决的
+核心问题。
