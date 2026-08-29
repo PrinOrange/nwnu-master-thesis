@@ -81,6 +81,7 @@ make cleanall # 清理中间文件并删除 PDF
 | `publistsec{标题}` | 成果分节板块：小标题 + 成果列表（见 `appendix/publications.tex`） |
 | `theorem` `lemma` `corollary` `definition` `proposition` | 定理 / 引理 / 推论 / 定义 / 命题环境 |
 | `code` | 带编号题注的代码浮动体（题注「代码 章-序号」，如「代码 1-1 冒泡排序代码」）；内部用 `lstlisting` 语法高亮 |
+| `\cref{label}` | 中文交叉引用，自动补「图 / 表 / 式 / 算法 / 代码 / 第…章」等前缀（见下方「交叉引用」） |
 
 ### 代码组件
 
@@ -97,8 +98,27 @@ int main(void) { return 0; }
 ```
 
 - **语言**：用 `[language=...]` 指定（`C`、`C++`、`Python`、`Java`、`Matlab` 等），省略则不高亮。
-- **交叉引用**：正文用 `代码\ref{code:bubble}`（`\ref` 得到「1-1」）。
+- **交叉引用**：正文用 `\cref{code:bubble}`（自动输出「代码 1-1」；`\ref` 仅得「1-1」）。
 - **中文注释**：listings 默认按 ASCII 处理，若代码含中文，用 `(*@ ... @*)` 包裹中文片段，或把代码存为外部文件后用 `\lstinputlisting{file}` 调入，避免溢出 / 乱码。
+
+### 交叉引用（cleveref）
+
+`nwnuthesis.sty` 引入 [cleveref](https://ctan.org/pkg/cleveref)，用 `\cref{label}` 即可自动补中文前缀，无需手动写「图 / 表 / 第…章」。支持的类型与输出：
+
+| 类型 | 写法 | 输出 |
+|---|---|---|
+| 图 | `\cref{Fig1-1}` | 图 1-1 |
+| 表 | `\cref{Table1-1}` | 表 1-1 |
+| 公式 | `\cref{Eq1-1}` | 式（1-1） |
+| 算法 | `\cref{Algorithm1-1}` | 算法 1-1 |
+| 代码 | `\cref{code:bubble}` | 代码 1-1 |
+| 章 | `\cref{chap:intro}` | 第 1 章 |
+| 节 | `\cref{sec:name}` | 第 1.1 节 |
+| 定理 / 引理 / 推论 / 定义 / 命题 | `\cref{Theorem1-1}` 等 | 定理 1-1 / 引理 1-1 / … |
+
+- 使用前提：给对象加 `\label`；`\chapter{...}\label{chap:xx}`、子节 `\subsection{...}\label{sec:xx}` 同理。
+- 与 `\ref` 并存：`\ref` 仍只返回编号（如「1-1」），`\cref` 才补前缀。
+- 前缀名与格式集中在 `nwnuthesis.sty` 末尾「13. cleveref 交叉引用前缀配置」，如需改写可在此自定义 `\crefname` / `\crefformat`。
 
 ## 注意事项
 
