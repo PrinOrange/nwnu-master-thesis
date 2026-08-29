@@ -63,7 +63,9 @@ make clean    # 清理中间文件（保留 PDF）
 make cleanall # 清理中间文件并删除 PDF
 ```
 
-编译链为 `pdflatex → bibtex → pdflatex → pdflatex`，中间文件全部输出到 `build/`，最终 `main.pdf` 复制回项目根目录。
+编译统一交给 **latexmk** 调度：`latexmk -pdf -outdir=build -synctex=1 main.tex`，它会自动判断编译顺序（pdflatex 补跑、bibtex 按需触发、交叉引用未稳定时自动重跑），不再手写 `pdflatex → bibtex → pdflatex → pdflatex` 的旧式四步链。中间文件全部输出到 `build/`，最终 `main.pdf` 复制回项目根目录。
+
+> 备选引擎：在 `build.ps1` 顶部把 `$Engine` 改为 `-pdfxe`，或 `make ENGINE=-pdfxe`，即可改用 XeLaTeX（Overleaf 等无 Windows 中文字体的环境必需）。
 
 ## 常用命令与环境
 

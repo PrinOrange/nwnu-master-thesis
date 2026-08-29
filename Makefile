@@ -1,40 +1,41 @@
 # ============================================================
 # Makefile for the NWNU graduate thesis template
-# Builds main.tex into main.pdf with pdfLaTeX:
-#     pdflatex -> bibtex -> pdflatex -> pdflatex
-# (Chinese is handled by ctex + CJK under pdfLaTeX.  The .sty is
-#  engine-aware: it also still compiles under XeLaTeX, in which
-#  case ctex + xeCJK loads the bundled fonts from assets/.)
+# Builds main.tex into main.pdf with latexmk:
+#     latexmk -pdf -outdir=build -synctex=1 main.tex
+# latexmk decides the compile order automatically (pdflatex as
+# needed, bibtex when the bibliography changes, and repeats passes
+# until references settle), so this replaces the old hand-written
+# 4-step chain (pdflatex -> bibtex -> pdflatex -> pdflatex).
+#
+# Chinese is handled by ctex + CJK under pdflatex (Windows system
+# CJK fonts).  To build with XeLaTeX instead (required on Overleaf,
+# which lacks the Windows fonts), switch the engine:  make ENGINE=-pdfxe
+# or edit ENGINE below.  nwnuthesis.sty is engine-aware (pdfLaTeX
+# loads system fonts, XeLaTeX loads the bundled assets/ fonts).
 #
 # All intermediate files go to build/; the final main.pdf is copied
 # back to the project root.  \include subdirs (body/, appendix/)
-# need matching build/ subdirs, created before compiling.
+# need matching build/ subdirs; they are created before compiling
+# so latexmk never hits a missing-aux-directory on its first pass.
 #
-# Prints friendly progress + warnings/errors; the full logs are kept
-# in build/pass1.log, pass2.log, pass3.log, bib.log and main.log.
-# NOTE: this file is ASCII-only for cross-platform safety (Windows
-#       Git Bash + Unix alike).  The Windows build.ps1 has the full
-#       Chinese/emoji output.
-#
-# Requires: GNU make + a TeX distribution with pdflatex/bibtex on PATH.
-#           Under pdfLaTeX, Chinese needs the Windows system fonts
-#           (SimSun/SimHei/KaiTi/FangSong/LiSu) installed.
+# Requires: GNU make + a TeX distribution with latexmk and pdflatex
+#           (or xelatex) on PATH.
 #
 # Targets:
-#   make           build with pdflatex
+#   make           build with latexmk (default pdflatex)
 #   make clean     remove intermediate files (keeps PDF)
 #   make cleanall  remove intermediates and the built PDF
 # ============================================================
 
 MAIN      := main
-BIB       := bibtex
-PDFLATEX  := pdflatex
+LATEXMK   := latexmk
+ENGINE    := -pdf             # -pdf = pdflatex ; -pdfxe = xelatex (Overleaf)
 BUILD     := build
 
-# \include 路径对应的 build 子目录
+# \include 子目录对应的 build 子目录
 BUILD_SUBDIRS := $(BUILD)/body $(BUILD)/appendix
 
-# Files that should trigger a rebuild when changed
+# 变更即触发重建的源文件
 SOURCES := $(MAIN).tex \
            references.bib \
            NWNUThesis.bst \
@@ -47,18 +48,13 @@ SOURCES := $(MAIN).tex \
 
 all: $(MAIN).pdf
 
-# 编译（四步），全部输出到 build/，打印进度 + 警告/错误
+# 编译：latexmk 自动调度编译顺序与补跑次数
 $(BUILD)/$(MAIN).pdf: $(SOURCES)
 	@mkdir -p $(BUILD_SUBDIRS)
-	@echo "[1/4] pdflatex (pass 1) ..."
-	@$(PDFLATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass1.log 2>&1 || { echo "[!!] pdflatex (pass 1) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass1.log | tail -n 30; exit 1; }
-	@echo "[2/4] bibtex ..."
-	@$(BIB) $(BUILD)/$(MAIN) >$(BUILD)/bib.log 2>&1 || { echo "[!!] bibtex FAILED:"; grep -E 'Warning|^!' $(BUILD)/bib.log | tail -n 30; exit 1; }
-	@echo "[3/4] pdflatex (pass 2) ..."
-	@$(PDFLATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass2.log 2>&1 || { echo "[!!] pdflatex (pass 2) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass2.log | tail -n 30; exit 1; }
-	@echo "[4/4] pdflatex (pass 3) ..."
-	@$(PDFLATEX) -synctex=1 -output-directory=$(BUILD) -interaction=nonstopmode -halt-on-error $(MAIN) >$(BUILD)/pass3.log 2>&1 || { echo "[!!] pdflatex (pass 3) FAILED:"; grep -E 'Warning|^!' $(BUILD)/pass3.log | tail -n 30; exit 1; }
-	@grep -E 'Warning' $(BUILD)/pass3.log | sed 's/^/[!] /' || true
+	@$(LATEXMK) $(ENGINE) -outdir=$(BUILD) -synctex=1 $(MAIN) >$(BUILD)/latexmk.log 2>&1 \
+	  || { echo "[!!] latexmk FAILED (see build/latexmk.log):"; \
+	       grep -iE 'error|^!' $(BUILD)/latexmk.log | tail -n 30; exit 1; }
+	@grep -E 'Warning' $(BUILD)/main.log | sed 's/^/[!] /' || true
 
 # 根目录 main.pdf 由 build/main.pdf 复制而来
 $(MAIN).pdf: $(BUILD)/$(MAIN).pdf
