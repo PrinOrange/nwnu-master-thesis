@@ -126,6 +126,10 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 % 定理类环境
 \RequirePackage[amsmath,thmmarks,hyperref]{ntheorem}
 
+% 代码（listings 语法高亮）：须早于 hyperref 加载，以便 hyperref 正确处理
+% 代码块编号的交叉引用与书签。
+\RequirePackage{listings}
+
 % hyperref（最后加载，避免与其它宏包冲突）
 \RequirePackage[unicode,
   pdfstartview=FitH,
@@ -438,6 +442,43 @@ BoldItalicFont=timesbi.ttf]{times.ttf}
 \renewcommand{\theequation}{\arabic{chapter}-\arabic{equation}}
 \renewcommand{\thesubfigure}{(\alph{subfigure})}  % 子图编号 (a)
 \renewcommand{\thesubtable}{(\alph{subtable})}    % 子表编号 (a)
+
+% 代码浮动体：题注编号为「代码 章-序号」（如 代码 1-1 冒泡排序代码）。
+% float.sty 已随 algorithm 宏包加载；\newfloat 创建带编号的浮动体，
+% \restylefloat* 使其题注改走本文件的 \@makecaption（居中、五号），与图表一致。
+\floatstyle{plain}
+\newfloat{code}{htbp}{loc}[chapter]
+\floatname{code}{\bfseries 代码}
+\restylefloat*{code}
+\renewcommand{\thecode}{\arabic{chapter}-\arabic{code}}
+\providecommand*{\theHcode}{\thechapter-\arabic{code}}
+
+% 代码语法高亮（listings）默认样式；语言可在每个代码块用 [language=...] 覆盖。
+% 若代码含中文注释，用 (*@ ... @*) 包裹中文（见 escapeinside），或将代码以
+% \lstinputlisting 从外部文件调入；纯 ASCII 代码无需任何处理。
+\definecolor{nwnu@codekeyword}{rgb}{0,0,0.9}
+\definecolor{nwnu@codecomment}{rgb}{0.4,0.4,0.6}
+\definecolor{nwnu@codestring}{rgb}{0.4,0.6,0.4}
+\definecolor{nwnu@codenumber}{rgb}{0.5,0.5,0.5}
+\definecolor{nwnu@coderule}{rgb}{0.7,0.7,0.7}
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{nwnu@codekeyword}\bfseries,
+  commentstyle=\color{nwnu@codecomment}\itshape,
+  stringstyle=\color{nwnu@codestring},
+  numberstyle=\color{nwnu@codenumber}\tiny,
+  numbers=left,
+  numbersep=8pt,
+  tabsize=4,
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{nwnu@coderule},
+  breaklines=true,
+  xleftmargin=2em,
+  captionpos=b,
+  columns=flexible,
+  escapeinside={(*@}{@*)},
+}
 
 \makeatletter
 \renewcommand{\p@subfigure}{\thefigure~} % 子图引用为 7.1 a)，母图与子图之间加空格

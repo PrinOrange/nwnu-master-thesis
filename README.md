@@ -80,6 +80,25 @@ make cleanall # 清理中间文件并删除 PDF
 | `publist` | 带 `[n]` 编号的成果列表 |
 | `publistsec{标题}` | 成果分节板块：小标题 + 成果列表（见 `appendix/publications.tex`） |
 | `theorem` `lemma` `corollary` `definition` `proposition` | 定理 / 引理 / 推论 / 定义 / 命题环境 |
+| `code` | 带编号题注的代码浮动体（题注「代码 章-序号」，如「代码 1-1 冒泡排序代码」）；内部用 `lstlisting` 语法高亮 |
+
+### 代码组件
+
+`nwnuthesis.sty` 基于 `listings` 宏包提供带编号题注的**代码组件**，题注编号为「代码 章-序号」（如「代码 1-1 冒泡排序代码」），与图 / 表 / 算法一致。用法：
+
+```latex
+\begin{code}[htbp]
+  \begin{lstlisting}[language=C]
+#include <stdio.h>
+int main(void) { return 0; }
+  \end{lstlisting}
+  \caption{冒泡排序代码}\label{code:bubble}
+\end{code}
+```
+
+- **语言**：用 `[language=...]` 指定（`C`、`C++`、`Python`、`Java`、`Matlab` 等），省略则不高亮。
+- **交叉引用**：正文用 `代码\ref{code:bubble}`（`\ref` 得到「1-1」）。
+- **中文注释**：listings 默认按 ASCII 处理，若代码含中文，用 `(*@ ... @*)` 包裹中文片段，或把代码存为外部文件后用 `\lstinputlisting{file}` 调入，避免溢出 / 乱码。
 
 ## 注意事项
 

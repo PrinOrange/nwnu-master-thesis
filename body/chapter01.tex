@@ -282,6 +282,47 @@ SAE 采用逐层训练的方式对数据进行降维，在 mini-batch
   \end{algorithmic}
 \end{algorithm}
 
+\subsection{代码的说明}
+
+为实现代码组件，本模板引入 \texttt{listings} 宏包进行语法高亮，题注编号为「代码
+章 - 序号」，如「代码 1-1 冒泡排序代码」。代码块需置于 \texttt{code} 浮动环境，
+用可选参数指定编程语言（如 \texttt{[language=C]}），\texttt{\textbackslash caption}
+与 \texttt{\textbackslash label} 提供题注与交叉引用：
+
+\begin{code}[htbp]
+  \begin{lstlisting}[language=C]
+#include <stdio.h>
+#define N 10
+
+/* bubble sort: sort array a in ascending order */
+void bubble_sort(int a[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (a[j] > a[j + 1]) {
+                int tmp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = tmp;
+            }
+        }
+    }
+}
+
+int main(void) {
+    int a[N] = {5, 2, 8, 1, 9, 3, 7, 4, 6, 0};
+    bubble_sort(a, N);
+    for (int i = 0; i < N; i++)
+        printf("%d ", a[i]);
+    return 0;
+}
+  \end{lstlisting}
+  \caption{冒泡排序代码}\label{code:bubble}
+\end{code}
+
+如代码\ref{code:bubble}所示，该程序使用冒泡排序将数组按升序排列。代码中保留数字
+和字母均使用 `Times New Roman` 字体；若代码含中文注释，可用
+\texttt{(*@...@*)} 包裹中文，或将代码保存为外部文件后用
+\texttt{\textbackslash lstinputlisting} 调入。
+
 \section{国内外研究现状}
 
 参考文献的引用采用行内编号制，例如：\cite{2004-David-Order}。
